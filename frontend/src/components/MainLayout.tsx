@@ -35,6 +35,9 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 <Link to="/budgets" className="text-gray-700 hover:text-primary-600 px-3 py-2">
                   Budgets
                 </Link>
+                <Link to="/recurring" className="text-gray-700 hover:text-primary-600 px-3 py-2">
+                  Recurring
+                </Link>
                 <Link to="/reports" className="text-gray-700 hover:text-primary-600 px-3 py-2">
                   Reports
                 </Link>

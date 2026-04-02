@@ -3,7 +3,16 @@ API v1 router
 """
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, accounts, categories, transactions, budgets, reports, insights
+from app.api.v1.endpoints import (
+    auth,
+    accounts,
+    categories,
+    transactions,
+    budgets,
+    reports,
+    insights,
+    recurring_transactions,
+)
 
 
 api_router = APIRouter()
@@ -16,3 +25,6 @@ api_router.include_router(transactions.router, prefix="/transactions", tags=["tr
 api_router.include_router(budgets.router, prefix="/budgets", tags=["budgets"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
 api_router.include_router(insights.router, prefix="/insights", tags=["insights"])
+api_router.include_router(
+    recurring_transactions.router, prefix="/recurring-transactions", tags=["recurring-transactions"]
+)
