@@ -101,6 +101,7 @@ export const TransactionsPage: React.FC = () => {
     setEditingTransaction(transaction);
     setFormData({
       account_id: transaction.account_id,
+      to_account_id: transaction.to_account_id,
       category_id: transaction.category_id,
       type: transaction.type,
       amount: transaction.amount,
@@ -311,8 +312,15 @@ export const TransactionsPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {getCategoryName(transaction.category_id)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {getAccountName(transaction.account_id)}
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {transaction.type === 'transfer' && transaction.to_account_id ? (
+                          <div>
+                            <div className="font-medium">{getAccountName(transaction.account_id)}</div>
+                            <div className="text-xs text-gray-500">→ {getAccountName(transaction.to_account_id)}</div>
+                          </div>
+                        ) : (
+                          getAccountName(transaction.account_id)
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs rounded-full ${typeStyle.bg} ${typeStyle.color}`}>
@@ -370,7 +378,7 @@ export const TransactionsPage: React.FC = () => {
                 <select
                   id="type"
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any, category_id: undefined })}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any, category_id: undefined, to_account_id: undefined })}
                   className="input mt-1"
                   required
                 >
@@ -384,7 +392,7 @@ export const TransactionsPage: React.FC = () => {
 
               <div>
                 <label htmlFor="account_id" className="block text-sm font-medium text-gray-700">
-                  Account *
+                  {formData.type === 'transfer' ? 'From Account (Source) *' : 'Account *'}
                 </label>
                 <select
                   id="account_id"
@@ -402,26 +410,53 @@ export const TransactionsPage: React.FC = () => {
                 </select>
               </div>
 
-              <div>
-                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
-                  Category
-                </label>
-                <select
-                  id="category_id"
-                  value={formData.category_id || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category_id: e.target.value ? parseInt(e.target.value) : undefined })
-                  }
-                  className="input mt-1"
-                >
-                  <option value="">Uncategorized</option>
-                  {filteredCategories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {formData.type === 'transfer' && (
+                <div>
+                  <label htmlFor="to_account_id" className="block text-sm font-medium text-gray-700">
+                    To Account (Target) *
+                  </label>
+                  <select
+                    id="to_account_id"
+                    value={formData.to_account_id || 0}
+                    onChange={(e) => setFormData({ ...formData, to_account_id: parseInt(e.target.value) })}
+                    className="input mt-1"
+                    required={formData.type === 'transfer'}
+                  >
+                    <option value={0}>Select target account</option>
+                    {accounts?.filter(acc => acc.id !== formData.account_id).map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Internal transfer: money will be moved from source to target account
+                  </p>
+                </div>
+              )}
+
+              {formData.type !== 'transfer' && (
+                <div>
+                  <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
+                    Category
+                  </label>
+                  <select
+                    id="category_id"
+                    value={formData.category_id || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category_id: e.target.value ? parseInt(e.target.value) : undefined })
+                    }
+                    className="input mt-1"
+                  >
+                    <option value="">Uncategorized</option>
+                    {filteredCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">

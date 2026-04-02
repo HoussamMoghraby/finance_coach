@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 class TransactionBase(BaseModel):
     """Base transaction schema"""
     account_id: int
+    to_account_id: Optional[int] = None  # For internal transfers
     category_id: Optional[int] = None
     merchant_id: Optional[int] = None
     type: str = Field(..., description="Transaction type: income, expense, transfer")
@@ -27,6 +28,7 @@ class TransactionCreate(TransactionBase):
 class TransactionUpdate(BaseModel):
     """Schema for updating a transaction"""
     account_id: Optional[int] = None
+    to_account_id: Optional[int] = None
     category_id: Optional[int] = None
     merchant_id: Optional[int] = None
     type: Optional[str] = None

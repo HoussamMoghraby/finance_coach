@@ -7,6 +7,7 @@ export interface Transaction {
   id: number;
   user_id: number;
   account_id: number;
+  to_account_id?: number;  // For internal transfers
   category_id?: number;
   merchant_id?: number;
   type: 'income' | 'expense' | 'transfer';
@@ -21,6 +22,7 @@ export interface Transaction {
 
 export interface TransactionCreate {
   account_id: number;
+  to_account_id?: number;  // For internal transfers
   category_id?: number;
   merchant_id?: number;
   type: 'income' | 'expense' | 'transfer';

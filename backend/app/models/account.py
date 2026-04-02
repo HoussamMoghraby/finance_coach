@@ -26,4 +26,5 @@ class Account(Base):
     
     # Relationships
     user = relationship("User", backref="accounts")
-    transactions = relationship("Transaction", back_populates="account")
+    transactions = relationship("Transaction", foreign_keys="[Transaction.account_id]", back_populates="account")
+    incoming_transfers = relationship("Transaction", foreign_keys="[Transaction.to_account_id]", back_populates="to_account")
