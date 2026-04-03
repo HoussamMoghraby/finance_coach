@@ -51,19 +51,17 @@ async def generate_insight(
         summary = await ai_service.generate_daily_summary(current_user.id, target_date)
         title = f"Daily Summary - {target_date.isoformat()}"
     
-    elif request.type in ["weekly", "monthly"]:
+    elif request.type == "weekly":
         end_date = request.end_date or date.today()
-        
-        if request.type == "weekly":
-            start_date = end_date - timedelta(days=7)
-            title = f"Weekly Summary - {start_date.isoformat()} to {end_date.isoformat()}"
-        else:  # monthly
-            start_date = end_date.replace(day=1)
-            title = f"Monthly Summary - {start_date.strftime('%B %Y')}"
-        
-        summary = await ai_service.generate_monthly_summary(
-            current_user.id, start_date, end_date
-        )
+        start_date = request.start_date or (end_date - timedelta(days=7))
+        summary = await ai_service.generate_weekly_summary(current_user.id, start_date, end_date)
+        title = f"Weekly Summary - {start_date.isoformat()} to {end_date.isoformat()}"
+    
+    elif request.type == "monthly":
+        end_date = request.end_date or date.today()
+        start_date = request.start_date or end_date.replace(day=1)
+        summary = await ai_service.generate_monthly_summary(current_user.id, start_date, end_date)
+        title = f"Monthly Summary - {start_date.strftime('%B %Y')}"
     
     else:
         raise HTTPException(
@@ -85,6 +83,27 @@ async def generate_insight(
     db.refresh(insight)
     
     return insight
+
+
+@router.post("/budget-coaching", response_model=ChatResponse)
+async def get_budget_coaching(
+    request: ChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get AI budget coaching advice"""
+    ai_service = AIService(db)
+    
+    try:
+        advice = await ai_service.generate_budget_coaching(
+            current_user.id, request.question
+        )
+        return ChatResponse(answer=advice)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate budget coaching: {str(e)}",
+        )
 
 
 @router.post("/ask", response_model=ChatResponse)

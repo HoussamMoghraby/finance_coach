@@ -11,6 +11,7 @@ import { BudgetsPage } from '@/pages/BudgetsPage'
 import { RecurringTransactionsPage } from '@/pages/RecurringTransactionsPage'
 import { ReportsPage } from '@/pages/ReportsPage'
 import { InsightsPage } from '@/pages/InsightsPage'
+import { AICoachPage } from '@/pages/AICoachPage'
 
 function App() {
   return (
@@ -85,6 +86,16 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <InsightsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-coach"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <AICoachPage />
                 </MainLayout>
               </ProtectedRoute>
             }

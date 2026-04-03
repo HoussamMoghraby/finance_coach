@@ -44,6 +44,9 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 <Link to="/insights" className="text-gray-700 hover:text-primary-600 px-3 py-2">
                   AI Insights
                 </Link>
+                <Link to="/ai-coach" className="text-gray-700 hover:text-primary-600 px-3 py-2">
+                  AI Coach
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-4">

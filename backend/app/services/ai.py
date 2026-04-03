@@ -90,6 +90,48 @@ class AIService:
             input_summary=f"Daily summary for {target_date}",
         )
     
+    async def generate_weekly_summary(
+        self, user_id: int, start_date: date, end_date: date
+    ) -> str:
+        """Generate weekly financial summary"""
+        overview = self.report_service.get_financial_overview(user_id, start_date, end_date)
+        category_breakdown = self.report_service.get_category_breakdown(
+            user_id, "expense", start_date, end_date
+        )
+        top_merchants = self.report_service.get_top_merchants(
+            user_id, 5, start_date, end_date
+        )
+        budget_overview = self.budget_service.get_budget_overview(user_id, end_date)
+        
+        category_text = "\n".join(
+            [f"- {c.category_name}: ${c.amount:.2f}" for c in category_breakdown[:8]]
+        )
+        
+        merchant_text = "\n".join(
+            [f"- {m.merchant_name}: ${m.amount:.2f}" for m in top_merchants[:5]]
+        )
+        
+        budget_text = f"${budget_overview.total_spent:.2f} / ${budget_overview.total_budget:.2f} ({budget_overview.percentage_used:.1f}%)"
+        
+        prompt = WEEKLY_SUMMARY_TEMPLATE.format(
+            start_date=start_date.isoformat(),
+            end_date=end_date.isoformat(),
+            total_income=f"{overview.total_income:.2f}",
+            total_expenses=f"{overview.total_expenses:.2f}",
+            net=f"{overview.net_income:.2f}",
+            category_breakdown=category_text or "No expenses recorded",
+            top_merchants=merchant_text or "No merchant data",
+            budget_status=budget_text,
+        )
+        
+        return await self._generate_and_track(
+            user_id=user_id,
+            task_type="weekly_summary",
+            prompt=prompt,
+            prompt_template_name="weekly_summary",
+            input_summary=f"Weekly summary {start_date} to {end_date}",
+        )
+    
     async def generate_monthly_summary(
         self, user_id: int, start_date: date, end_date: date
     ) -> str:
@@ -148,6 +190,63 @@ class AIService:
             prompt=prompt,
             prompt_template_name="monthly_summary",
             input_summary=f"Monthly summary {start_date} to {end_date}",
+        )
+    
+    async def generate_budget_coaching(
+        self, user_id: int, user_input: Optional[str] = None
+    ) -> str:
+        """Generate budget coaching advice"""
+        today = date.today()
+        budget_overview = self.budget_service.get_budget_overview(user_id, today)
+        
+        overview = self.report_service.get_financial_overview(
+            user_id,
+            start_date=today.replace(day=1),
+            end_date=today,
+        )
+        
+        category_breakdown = self.report_service.get_category_breakdown(
+            user_id, "expense", today.replace(day=1), today
+        )
+        
+        budget_text = f"""Total Budget: ${budget_overview.total_budget:.2f}
+Total Spent: ${budget_overview.total_spent:.2f}
+Remaining: ${budget_overview.total_remaining:.2f}
+Usage: {budget_overview.percentage_used:.1f}%
+{"⚠️ Over budget!" if budget_overview.percentage_used > 100 else ""}"""
+        
+        spending_text = "\n".join(
+            [f"- {c.category_name}: ${c.amount:.2f}" for c in category_breakdown[:10]]
+        )
+        
+        prompt = BUDGET_COACHING_TEMPLATE.format(
+            budget_status=budget_text,
+            spending_summary=spending_text or "No recent spending",
+            user_input=user_input or "General budget guidance needed",
+        )
+        
+        return await self._generate_and_track(
+            user_id=user_id,
+            task_type="budget_coaching",
+            prompt=prompt,
+            prompt_template_name="budget_coaching",
+            input_summary=f"Budget coaching request",
+        )
+    
+    async def explain_spending(
+        self, user_id: int, spending_data: str
+    ) -> str:
+        """Generate an explanation of spending patterns"""
+        prompt = SPENDING_EXPLANATION_TEMPLATE.format(
+            spending_data=spending_data,
+        )
+        
+        return await self._generate_and_track(
+            user_id=user_id,
+            task_type="spending_explanation",
+            prompt=prompt,
+            prompt_template_name="spending_explanation",
+            input_summary="Spending explanation request",
         )
     
     async def answer_question(
