@@ -3,6 +3,7 @@
  */
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { NotificationBell } from './NotificationBell';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -50,6 +51,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <span className="text-sm text-gray-700">{user?.email}</span>
               <button onClick={handleLogout} className="btn btn-secondary">
                 Logout

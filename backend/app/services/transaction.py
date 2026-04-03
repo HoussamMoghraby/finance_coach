@@ -76,6 +76,14 @@ class TransactionService:
         elif transaction_data.type == "expense":
             # Expense: deduct from account
             self.account_repo.update_balance(account, transaction_data.amount, False)
+            
+            # Check budget thresholds after expense
+            if transaction_data.category_id:
+                self._check_budget_thresholds(user_id, transaction_data.category_id)
+            
+            # Check for unusual spending
+            if transaction_data.category_id:
+                self._check_unusual_spending(user_id, transaction)
         
         return transaction
     
@@ -166,3 +174,64 @@ class TransactionService:
         
         # Delete transaction
         self.repo.delete(transaction)
+    
+    def _check_budget_thresholds(self, user_id: int, category_id: int) -> None:
+        """Check budget thresholds and create notifications if needed"""
+        try:
+            from app.services.budget import BudgetService
+            budget_service = BudgetService(self.db)
+            budget_service.check_and_notify_budget_thresholds(user_id, category_id)
+        except Exception:
+            # Don't fail transaction creation if notification fails
+            pass
+    
+    def _check_unusual_spending(self, user_id: int, transaction: Transaction) -> None:
+        """Check for unusual spending and create notification if detected"""
+        try:
+            from app.services.notification import NotificationService
+            from datetime import timedelta
+            
+            # Get average spending for this category in the last 90 days
+            filters = TransactionFilter(
+                category_id=transaction.category_id,
+                type="expense",
+                start_date=transaction.transaction_date - timedelta(days=90),
+                end_date=transaction.transaction_date,
+            )
+            recent_transactions = self.repo.get_all_for_user(user_id, filters, skip=0, limit=1000)
+            
+            # Need at least 5 transactions to establish a pattern
+            if len(recent_transactions) < 5:
+                return
+            
+            # Calculate average amount
+            total = sum(t.amount for t in recent_transactions if t.id != transaction.id)
+            count = len([t for t in recent_transactions if t.id != transaction.id])
+            
+            if count == 0:
+                return
+                
+            average = total / count
+            
+            # If current transaction is more than 2x the average, it's unusual
+            if transaction.amount > average * 2:
+                notification_service = NotificationService(self.db)
+                
+                # Get category name
+                category_name = "Uncategorized"
+                if transaction.category_id:
+                    from app.repositories.category import CategoryRepository
+                    category_repo = CategoryRepository(self.db)
+                    category = category_repo.get_by_id(transaction.category_id, user_id)
+                    if category:
+                        category_name = category.name
+                
+                notification_service.create_unusual_spending_notification(
+                    user_id=user_id,
+                    category=category_name,
+                    amount=transaction.amount,
+                    average=average,
+                )
+        except Exception:
+            # Don't fail transaction creation if notification fails
+            pass

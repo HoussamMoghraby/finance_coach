@@ -82,6 +82,19 @@ async def generate_insight(
     db.commit()
     db.refresh(insight)
     
+    # Create notification that summary is ready
+    try:
+        from app.services.notification import NotificationService
+        notification_service = NotificationService(db)
+        notification_service.create_summary_ready_notification(
+            user_id=current_user.id,
+            summary_type=request.type.capitalize(),
+            period=f"{start_date.isoformat()} to {end_date.isoformat()}",
+        )
+    except Exception:
+        # Don't fail insight generation if notification fails
+        pass
+    
     return insight
 
 

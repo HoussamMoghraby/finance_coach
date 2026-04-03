@@ -137,3 +137,69 @@ class BudgetService:
             percentage_used=round(percentage_used, 2),
             category_budgets=category_statuses,
         )
+    
+    def check_and_notify_budget_thresholds(
+        self, user_id: int, category_id: Optional[int] = None
+    ) -> List[str]:
+        """
+        Check budget thresholds and create notifications if needed.
+        Returns list of notification types created.
+        """
+        from app.services.notification import NotificationService
+        
+        notifications_created = []
+        notification_service = NotificationService(self.db)
+        
+        # Get active budgets
+        budgets = self.get_active_budgets(user_id, date.today())
+        
+        # Filter by category if specified
+        if category_id is not None:
+            budgets = [b for b in budgets if b.category_id == category_id]
+        
+        for budget in budgets:
+            status = self.calculate_budget_status(budget, user_id)
+            
+            # Get budget name (use category name if available)
+            if not budget.category_id:
+                budget_name = "Overall"
+            elif budget.category:
+                budget_name = budget.category.name
+            else:
+                # Fallback if relationship not loaded
+                from app.repositories.category import CategoryRepository
+                category_repo = CategoryRepository(self.db)
+                category = category_repo.get_by_id(budget.category_id, user_id)
+                budget_name = category.name if category else f"Category {budget.category_id}"
+            
+            # Check if budget is exceeded
+            if status.is_over_budget:
+                notification_service.create_budget_exceeded_notification(
+                    user_id=user_id,
+                    budget_name=budget_name,
+                    spent=status.spent,
+                    limit=budget.amount,
+                )
+                notifications_created.append("budget_exceeded")
+            
+            # Check threshold levels (80%, 90%, 100%)
+            elif status.percentage_used >= 90:
+                notification_service.create_budget_threshold_notification(
+                    user_id=user_id,
+                    budget_name=budget_name,
+                    percentage=status.percentage_used,
+                    spent=status.spent,
+                    limit=budget.amount,
+                )
+                notifications_created.append("budget_threshold_90")
+            elif status.percentage_used >= 80:
+                notification_service.create_budget_threshold_notification(
+                    user_id=user_id,
+                    budget_name=budget_name,
+                    percentage=status.percentage_used,
+                    spent=status.spent,
+                    limit=budget.amount,
+                )
+                notifications_created.append("budget_threshold_80")
+        
+        return notifications_created

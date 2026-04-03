@@ -9,6 +9,7 @@ from app.models.transaction import Transaction
 from app.models.budget import Budget
 from app.models.insight import Insight, AIInteraction
 from app.models.recurring_transaction import RecurringTransaction
+from app.models.notification import Notification
 
 __all__ = [
     "User",
@@ -20,4 +21,5 @@ __all__ = [
     "Insight",
     "AIInteraction",
     "RecurringTransaction",
+    "Notification",
 ]

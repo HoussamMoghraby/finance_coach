@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     reports,
     insights,
     recurring_transactions,
+    notifications,
 )
 
 
@@ -28,3 +29,4 @@ api_router.include_router(insights.router, prefix="/insights", tags=["insights"]
 api_router.include_router(
     recurring_transactions.router, prefix="/recurring-transactions", tags=["recurring-transactions"]
 )
+api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])

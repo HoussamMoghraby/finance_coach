@@ -224,3 +224,35 @@ class RecurringTransactionService:
                 return date(last_date.year + 1, 1, min(last_date.day, 28))
             else:
                 return date(last_date.year, last_date.month + 1, min(last_date.day, 28))
+    
+    def check_and_notify_upcoming_payments(
+        self, user_id: int, days_ahead: int = 7
+    ) -> List[str]:
+        """
+        Check for upcoming recurring payments and create notifications.
+        Returns list of notification types created.
+        """
+        from app.services.notification import NotificationService
+        
+        notifications_created = []
+        notification_service = NotificationService(self.db)
+        
+        # Get recurring payments due in the next X days
+        target_date = date.today() + timedelta(days=days_ahead)
+        upcoming = self.repo.get_upcoming(user_id, target_date, active_only=True)
+        
+        for recurring in upcoming:
+            # Only notify if the payment is within the notification window
+            days_until = (recurring.next_expected_date - date.today()).days
+            
+            # Notify for payments due in 1 day, 3 days, or 7 days
+            if days_until in [1, 3, 7]:
+                notification_service.create_recurring_upcoming_notification(
+                    user_id=user_id,
+                    description=recurring.description,
+                    amount=recurring.expected_amount,
+                    due_date=recurring.next_expected_date,
+                )
+                notifications_created.append(f"recurring_upcoming_{days_until}d")
+        
+        return notifications_created

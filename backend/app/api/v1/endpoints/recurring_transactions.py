@@ -61,6 +61,31 @@ async def detect_recurring_patterns(
     )
 
 
+@router.post("/check-upcoming", status_code=status.HTTP_200_OK)
+async def check_upcoming_payments_and_notify(
+    days_ahead: int = Query(7, ge=1, le=30),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Check for upcoming recurring payments and create notifications
+    
+    - **days_ahead**: Check for payments due in the next X days (default: 7)
+    
+    This endpoint triggers notification creation for upcoming recurring payments.
+    It's designed to be called periodically (e.g., daily via a scheduler).
+    """
+    service = RecurringTransactionService(db)
+    notifications_created = service.check_and_notify_upcoming_payments(
+        current_user.id, days_ahead
+    )
+    return {
+        "status": "success",
+        "notifications_created": len(notifications_created),
+        "details": notifications_created,
+    }
+
+
 @router.get("/{recurring_id}", response_model=RecurringTransaction)
 async def get_recurring_transaction(
     recurring_id: int,
