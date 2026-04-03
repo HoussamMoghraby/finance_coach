@@ -87,11 +87,11 @@ export const DashboardPage = () => {
       </IonText>
 
       {/* Overview Cards */}
-      <IonGrid className="ion-no-padding">
-        <IonRow>
-          <IonCol size="12" sizeMd="6" sizeLg="3">
-            <IonCard className="ion-no-margin" color="success" style={{ '--background': 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
-              <IonCardContent>
+      <IonGrid className='ion-no-margin'>
+        <IonRow className="ion-align-items-stretch">
+          <IonCol size="12" sizeSm="6" sizeLg="3" className="pb-1">
+            <IonCard color="success" style={{ '--background': 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }} className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText color="light">
                   <p className="text-xs font-medium opacity-90">Total Income</p>
                   <h2 className="text-2xl font-bold mt-1">
@@ -103,9 +103,9 @@ export const DashboardPage = () => {
             </IonCard>
           </IonCol>
 
-          <IonCol size="12" sizeMd="6" sizeLg="3">
-            <IonCard className="ion-no-margin" color="danger" style={{ '--background': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
-              <IonCardContent>
+          <IonCol size="12" sizeSm="6" sizeLg="3" className="pb-1">
+            <IonCard color="danger" style={{ '--background': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }} className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText color="light">
                   <p className="text-xs font-medium opacity-90">Total Expenses</p>
                   <h2 className="text-2xl font-bold mt-1">
@@ -117,17 +117,17 @@ export const DashboardPage = () => {
             </IonCard>
           </IonCol>
 
-          <IonCol size="12" sizeMd="6" sizeLg="3">
+          <IonCol size="12" sizeSm="6" sizeLg="3" className="pb-1">
             <IonCard
-              className="ion-no-margin"
               color={(data?.overview.net_income || 0) >= 0 ? 'primary' : 'warning'}
               style={{
                 '--background': (data?.overview.net_income || 0) >= 0
                   ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
                   : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
               }}
+              className="ion-no-margin h-full"
             >
-              <IonCardContent>
+              <IonCardContent className="py-3">
                 <IonText color="light">
                   <p className="text-xs font-medium opacity-90">Net Income</p>
                   <h2 className="text-2xl font-bold mt-1">
@@ -141,9 +141,9 @@ export const DashboardPage = () => {
             </IonCard>
           </IonCol>
 
-          <IonCol size="12" sizeMd="6" sizeLg="3">
-            <IonCard className="ion-no-margin" color="secondary" style={{ '--background': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}>
-              <IonCardContent>
+          <IonCol size="12" sizeSm="6" sizeLg="3" className="pb-1">
+            <IonCard color="secondary" style={{ '--background': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }} className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText color="light">
                   <p className="text-xs font-medium opacity-90">Total Balance</p>
                   <h2 className="text-2xl font-bold mt-1">
@@ -160,11 +160,11 @@ export const DashboardPage = () => {
       </IonGrid>
 
       {/* Secondary Metrics */}
-      <IonGrid className="ion-no-padding">
-        <IonRow>
-          <IonCol size="12" sizeMd="4">
-            <IonCard>
-              <IonCardContent>
+      <IonGrid>
+        <IonRow className="ion-align-items-stretch">
+          <IonCol size="12" sizeMd="4" className="pb-1">
+            <IonCard className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText>
                   <p className="text-sm font-medium">Savings Rate</p>
                   <h3 className="text-xl font-bold mt-1">{savingsRate}%</h3>
@@ -178,9 +178,9 @@ export const DashboardPage = () => {
             </IonCard>
           </IonCol>
 
-          <IonCol size="12" sizeMd="4">
-            <IonCard>
-              <IonCardContent>
+          <IonCol size="12" sizeMd="4" className="pb-1">
+            <IonCard className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText>
                   <p className="text-sm font-medium">Budget Status</p>
                 </IonText>
@@ -215,9 +215,9 @@ export const DashboardPage = () => {
             </IonCard>
           </IonCol>
 
-          <IonCol size="12" sizeMd="4">
-            <IonCard>
-              <IonCardContent>
+          <IonCol size="12" sizeMd="4" className="pb-1">
+            <IonCard className="ion-no-margin h-full">
+              <IonCardContent className="py-3">
                 <IonText>
                   <p className="text-sm font-medium">Average Daily Spending</p>
                   <h3 className="text-xl font-bold mt-1">

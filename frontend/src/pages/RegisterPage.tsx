@@ -60,7 +60,7 @@ export const RegisterPage = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>Finance Coach</IonTitle>
+          <IonTitle>WenTaro AI</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding" fullscreen>

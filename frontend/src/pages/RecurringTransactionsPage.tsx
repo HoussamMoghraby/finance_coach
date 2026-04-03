@@ -380,7 +380,7 @@ export const RecurringTransactionsPage = () => {
               const isOverdue = daysUntil < 0;
               const isSoon = daysUntil <= 7;
 
-              const cardColor = isOverdue ? 'danger' : isSoon ? 'warning' : undefined;
+              const cardColor = /*isOverdue ? 'danger' : isSoon ? 'warning' : */undefined;
               return (
                 <IonCard key={rec.id} color={cardColor}>
                   <IonCardContent>

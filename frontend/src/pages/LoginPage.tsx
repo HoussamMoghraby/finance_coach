@@ -48,17 +48,17 @@ export const LoginPage = () => {
 
   return (
     <IonPage>
-      <IonHeader>
+      {/* <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>Finance Coach</IonTitle>
+          <IonTitle>WenTaro AI</IonTitle>
         </IonToolbar>
-      </IonHeader>
+      </IonHeader> */}
       <IonContent className="ion-padding" fullscreen>
         <div className="flex flex-col items-center justify-center min-h-full">
           <IonCard className="w-full max-w-md">
             <IonCardHeader>
               <div className="text-center">
-                <IonCardTitle className="text-2xl font-bold">💰 AI Personal Finance Coach</IonCardTitle>
+                <IonCardTitle className="text-2xl font-bold">💰 WenTaro AI</IonCardTitle>
                 <IonCardSubtitle className="mt-2">Sign in to your account</IonCardSubtitle>
               </div>
             </IonCardHeader>

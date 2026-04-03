@@ -122,7 +122,7 @@ export const AICoachPage = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>AI Finance Coach</IonTitle>
+          <IonTitle>WenTaro AI</IonTitle>
           <IonSegment
             value={mode}
             onIonChange={(e) => setMode(e.detail.value as CoachMode)}
