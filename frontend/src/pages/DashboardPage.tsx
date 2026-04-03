@@ -65,26 +65,28 @@ export const DashboardPage = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <IonSelect
-          value={dateRange}
-          onIonChange={(e) => setDateRange(e.detail.value)}
-          interface="popover"
-        >
-          <IonSelectOption value="current_month">Current Month</IonSelectOption>
-          <IonSelectOption value="last_month">Last Month</IonSelectOption>
-          <IonSelectOption value="last_3_months">Last 3 Months</IonSelectOption>
-          <IonSelectOption value="current_year">Current Year</IonSelectOption>
-        </IonSelect>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <IonText color="medium">
+            <p className="text-sm">
+              Period: {new Date(data?.overview.period_start || '').toLocaleDateString()} -{' '}
+              {new Date(data?.overview.period_end || '').toLocaleDateString()}
+            </p>
+          </IonText>
+        </div>
+        <div className="ml-4">
+          <IonSelect
+            value={dateRange}
+            onIonChange={(e) => setDateRange(e.detail.value)}
+            interface="popover"
+          >
+            <IonSelectOption value="current_month">Current Month</IonSelectOption>
+            <IonSelectOption value="last_month">Last Month</IonSelectOption>
+            <IonSelectOption value="last_3_months">Last 3 Months</IonSelectOption>
+            <IonSelectOption value="current_year">Current Year</IonSelectOption>
+          </IonSelect>
+        </div>
       </div>
-
-      {/* Period Display */}
-      <IonText color="medium">
-        <p className="text-sm">
-          Period: {new Date(data?.overview.period_start || '').toLocaleDateString()} -{' '}
-          {new Date(data?.overview.period_end || '').toLocaleDateString()}
-        </p>
-      </IonText>
 
       {/* Overview Cards */}
       <IonGrid className='ion-no-margin'>

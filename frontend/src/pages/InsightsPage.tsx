@@ -5,9 +5,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonCard,
   IonCardHeader,
@@ -77,11 +74,6 @@ export const InsightsPage = () => {
   if (isLoading) {
     return (
       <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>AI Insights</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonContent className="ion-padding">
           <div className="text-center py-12">
             <IonSpinner name="crescent" />
@@ -97,11 +89,6 @@ export const InsightsPage = () => {
   if (error) {
     return (
       <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>AI Insights</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonContent className="ion-padding">
           <IonCard color="danger">
             <IonCardContent className="text-center">
@@ -117,10 +104,16 @@ export const InsightsPage = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>AI Insights</IonTitle>
-          <div slot="end" className="flex gap-2 mr-4">
+      <IonContent className="ion-padding">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">AI Insights</h1>
+            <IonText color="medium">
+              <p className="text-sm">AI-generated financial summaries and analysis</p>
+            </IonText>
+          </div>
+          <div className="ml-4">
             <IonSelect
               value={selectedType}
               onIonChange={(e) => setSelectedType(e.detail.value as any)}
@@ -130,30 +123,8 @@ export const InsightsPage = () => {
               <IonSelectOption value="weekly">Weekly Summary</IonSelectOption>
               <IonSelectOption value="monthly">Monthly Summary</IonSelectOption>
             </IonSelect>
-
-            <IonButton
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              size="small"
-            >
-              {isGenerating ? (
-                <>
-                  <IonSpinner name="crescent" className="mr-2" style={{ width: '16px', height: '16px' }} />
-                  Generating...
-                </>
-              ) : (
-                <>🤖 Generate</>
-              )}
-            </IonButton>
           </div>
-        </IonToolbar>
-      </IonHeader>
-
-      <IonContent className="ion-padding">
-
-        <IonText color="medium">
-          <p className="mb-4">AI-generated financial summaries and analysis</p>
-        </IonText>
+        </div>
 
         {/* Info Banner */}
         <IonCard color="primary">
@@ -173,6 +144,23 @@ export const InsightsPage = () => {
             </div>
           </IonCardContent>
         </IonCard>
+
+        {/* Generate Button */}
+        <div className="flex justify-center py-2">
+          <IonButton
+            onClick={handleGenerate}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <IonSpinner name="crescent" className="mr-2" style={{ width: '16px', height: '16px' }} />
+                Generating...
+              </>
+            ) : (
+              <>🤖 Generate Insight</>
+            )}
+          </IonButton>
+        </div>
 
         {/* Insights List */}
         {insights && insights.length > 0 ? (

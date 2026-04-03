@@ -102,34 +102,33 @@ export const ReportsPage = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Financial Reports</IonTitle>
-          <IonSelect
-            value={period}
-            onIonChange={(e) => setPeriod(e.detail.value)}
-            slot="end"
-            interface="popover"
-          >
-            <IonSelectOption value="current_month">Current Month</IonSelectOption>
-            <IonSelectOption value="last_month">Last Month</IonSelectOption>
-            <IonSelectOption value="last_3_months">Last 3 Months</IonSelectOption>
-            <IonSelectOption value="last_6_months">Last 6 Months</IonSelectOption>
-            <IonSelectOption value="current_year">Current Year</IonSelectOption>
-            <IonSelectOption value="last_year">Last Year</IonSelectOption>
-          </IonSelect>
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent className="ion-padding">
-
-        {/* Period Display */}
-        <IonText color="medium">
-          <p className="text-sm mb-4">
-            Period: {new Date(overview?.period_start || '').toLocaleDateString()} -{' '}
-            {new Date(overview?.period_end || '').toLocaleDateString()}
-          </p>
-        </IonText>
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">Financial Reports</h1>
+            <IonText color="medium">
+              <p className="text-sm">
+                Period: {new Date(overview?.period_start || '').toLocaleDateString()} -{' '}
+                {new Date(overview?.period_end || '').toLocaleDateString()}
+              </p>
+            </IonText>
+          </div>
+          <div className="ml-4">
+            <IonSelect
+              value={period}
+              onIonChange={(e) => setPeriod(e.detail.value)}
+              interface="popover"
+            >
+              <IonSelectOption value="current_month">Current Month</IonSelectOption>
+              <IonSelectOption value="last_month">Last Month</IonSelectOption>
+              <IonSelectOption value="last_3_months">Last 3 Months</IonSelectOption>
+              <IonSelectOption value="last_6_months">Last 6 Months</IonSelectOption>
+              <IonSelectOption value="current_year">Current Year</IonSelectOption>
+              <IonSelectOption value="last_year">Last Year</IonSelectOption>
+            </IonSelect>
+          </div>
+        </div>
 
         {/* View Tabs */}
         <IonSegment value={activeView} onIonChange={(e) => setActiveView(e.detail.value as ReportView)} className="mb-6">
