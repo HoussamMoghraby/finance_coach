@@ -170,14 +170,11 @@ export const AccountsPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Accounts & Wallets</h1>
-          <IonText color="medium">
-            <p className="text-sm">Manage your financial accounts</p>
-          </IonText>
-        </div>
-        <IonButton onClick={handleOpenCreate}>+ Add Account</IonButton>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Accounts</h1>
+        <IonText color="medium">
+          <p className="text-sm">Manage your financial accounts</p>
+        </IonText>
       </div>
 
       {/* Summary Card */}
@@ -192,6 +189,11 @@ export const AccountsPage: React.FC = () => {
           </IonText>
         </IonCardContent>
       </IonCard>
+
+      {/* Add Account Button */}
+      <div className="flex justify-center py-2">
+        <IonButton onClick={handleOpenCreate}>+ Add Account</IonButton>
+      </div>
 
       {/* Accounts Grid */}
       {accounts && accounts.length > 0 ? (

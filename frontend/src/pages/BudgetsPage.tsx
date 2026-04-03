@@ -170,16 +170,11 @@ export const BudgetsPage = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Budgets</h1>
-          <IonText color="medium">
-            <p className="text-sm">Manage your spending limits</p>
-          </IonText>
-        </div>
-        <IonButton onClick={handleOpenCreate}>
-          + Create Budget
-        </IonButton>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Budgets</h1>
+        <IonText color="medium">
+          <p className="text-sm">Manage your spending limits</p>
+        </IonText>
       </div>
 
       {/* Overall Budget Summary */}
@@ -227,6 +222,11 @@ export const BudgetsPage = () => {
           </IonCardContent>
         </IonCard>
       )}
+
+      {/* Create Budget Button */}
+      <div className="flex justify-center py-2">
+        <IonButton onClick={handleOpenCreate}>+ Create Budget</IonButton>
+      </div>
 
       {/* Individual Budgets */}
       <IonGrid className="ion-no-padding">

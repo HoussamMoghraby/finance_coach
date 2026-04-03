@@ -47,7 +47,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>💰 WenTaro AI</IonTitle>
+          <IonTitle>💰 Wentaro AI</IonTitle>
           <IonButtons slot="end">
             <NotificationBell />
             <IonButton onClick={handleLogout}>

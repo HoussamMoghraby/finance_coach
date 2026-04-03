@@ -213,14 +213,11 @@ export const TransactionsPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Transactions</h1>
-          <IonText color="medium">
-            <p className="text-sm">Track your income and expenses</p>
-          </IonText>
-        </div>
-        <IonButton onClick={handleOpenCreate}>+ Add Transaction</IonButton>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Transactions</h1>
+        <IonText color="medium">
+          <p className="text-sm">Track your income and expenses</p>
+        </IonText>
       </div>
 
       {/* Filters */}
@@ -297,6 +294,11 @@ export const TransactionsPage: React.FC = () => {
           </IonGrid>
         </IonCardContent>
       </IonCard>
+
+      {/* Add Transaction Button */}
+      <div className="flex justify-center py-2">
+        <IonButton onClick={handleOpenCreate}>+ Add Transaction</IonButton>
+      </div>
 
       {/* Transactions List */}
       {transactions && transactions.length > 0 ? (

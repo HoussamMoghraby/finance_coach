@@ -221,16 +221,16 @@ export const RecurringTransactionsPage = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Recurring Transactions</h1>
-          <IonText color="medium">
-            <p className="text-sm">Manage subscriptions and recurring bills</p>
-          </IonText>
-        </div>
-        <IonButton onClick={handleOpenCreate}>
-          + Add Recurring
-        </IonButton>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Recurring Transactions</h1>
+        <IonText color="medium">
+          <p className="text-sm">Manage subscriptions and recurring bills</p>
+        </IonText>
+      </div>
+
+      {/* Add Recurring Button */}
+      <div className="flex justify-center py-2">
+        <IonButton onClick={handleOpenCreate}>+ Add Recurring</IonButton>
       </div>
 
       {/* Tabs */}
