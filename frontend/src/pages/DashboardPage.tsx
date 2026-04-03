@@ -5,40 +5,13 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { reportsAPI, DashboardData } from '@/services/reports';
 import { budgetsAPI } from '@/services/budgets';
+import { getDateRange } from '@/utils/dateUtils';
 
 export const DashboardPage = () => {
   const [dateRange, setDateRange] = useState('current_month');
 
-  // Calculate date range
-  const getDateRange = () => {
-    const today = new Date();
-    let startDate: string | undefined;
-    let endDate: string | undefined;
-
-    switch (dateRange) {
-      case 'current_month':
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        endDate = today.toISOString().split('T')[0];
-        break;
-      case 'last_month':
-        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        startDate = lastMonth.toISOString().split('T')[0];
-        endDate = new Date(today.getFullYear(), today.getMonth(), 0).toISOString().split('T')[0];
-        break;
-      case 'last_3_months':
-        startDate = new Date(today.getFullYear(), today.getMonth() - 3, 1).toISOString().split('T')[0];
-        endDate = today.toISOString().split('T')[0];
-        break;
-      case 'current_year':
-        startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
-        endDate = today.toISOString().split('T')[0];
-        break;
-    }
-
-    return { startDate, endDate };
-  };
-
-  const { startDate, endDate } = getDateRange();
+  // Get date range using centralized utility
+  const { startDate, endDate } = getDateRange(dateRange);
 
   // Fetch dashboard data
   const { data, isLoading, error } = useQuery<DashboardData>({

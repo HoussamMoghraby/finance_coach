@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { insightsAPI, Insight, InsightGenerateRequest } from '@/services/insights';
+import { formatDateForInput, formatUTCDate, formatUTCDateTime } from '@/utils/dateUtils';
 
 export const InsightsPage = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -33,7 +34,7 @@ export const InsightsPage = () => {
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatDateForInput();
 
     const request: InsightGenerateRequest = {
       type: selectedType,
@@ -44,13 +45,13 @@ export const InsightsPage = () => {
     if (selectedType === 'weekly') {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      request.start_date = weekAgo.toISOString().split('T')[0];
+      request.start_date = formatDateForInput(weekAgo);
     }
     // For monthly, set start date to first day of current month
     else if (selectedType === 'monthly') {
       const firstDay = new Date();
       firstDay.setDate(1);
-      request.start_date = firstDay.toISOString().split('T')[0];
+      request.start_date = formatDateForInput(firstDay);
     }
 
     generateMutation.mutate(request);
@@ -162,19 +163,13 @@ export const InsightsPage = () => {
                       {insight.type.charAt(0).toUpperCase() + insight.type.slice(1)}
                     </span>
                     <span className="text-sm text-gray-500">
-                      {new Date(insight.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                      {formatUTCDateTime(insight.created_at)}
                     </span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">{insight.title}</h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    {new Date(insight.period_start).toLocaleDateString()} -{' '}
-                    {new Date(insight.period_end).toLocaleDateString()}
+                    {formatUTCDate(insight.period_start)} -{' '}
+                    {formatUTCDate(insight.period_end)}
                   </p>
                 </div>
               </div>

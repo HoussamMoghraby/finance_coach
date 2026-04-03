@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { budgetsAPI, BudgetCreate, BudgetUpdate, BudgetStatus } from '@/services/budgets';
 import { categoriesAPI, Category } from '@/services/categories';
+import { formatDateForInput, formatUTCDate } from '@/utils/dateUtils';
 
 export const BudgetsPage = () => {
   const queryClient = useQueryClient();
@@ -14,8 +15,8 @@ export const BudgetsPage = () => {
     category_id: undefined,
     amount: 0,
     period_type: 'monthly',
-    start_date: new Date().toISOString().split('T')[0],
-    end_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0],
+    start_date: formatDateForInput(),
+    end_date: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))),
   });
 
   // Fetch budget overview with spending status
@@ -65,10 +66,8 @@ export const BudgetsPage = () => {
       category_id: undefined,
       amount: 0,
       period_type: 'monthly',
-      start_date: new Date().toISOString().split('T')[0],
-      end_date: new Date(new Date().setMonth(new Date().getMonth() + 1))
-        .toISOString()
-        .split('T')[0],
+      start_date: formatDateForInput(),
+      end_date: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))),
     });
     setEditingBudget(null);
   };

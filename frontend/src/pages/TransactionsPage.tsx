@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionsAPI, Transaction, TransactionCreate, TransactionFilters } from '@/services/transactions';
 import { accountsAPI } from '@/services/accounts';
 import { categoriesAPI } from '@/services/categories';
+import { formatUTCDate, formatDateForInput } from '@/utils/dateUtils';
 
 const TRANSACTION_TYPES = [
   { value: 'income', label: 'Income', color: 'text-green-600', bg: 'bg-green-50' },
@@ -24,7 +25,7 @@ export const TransactionsPage: React.FC = () => {
     type: 'expense',
     amount: 0,
     description: '',
-    transaction_date: new Date().toISOString().split('T')[0],
+    transaction_date: formatDateForInput(),
   });
 
   // Fetch transactions with filters
@@ -87,7 +88,7 @@ export const TransactionsPage: React.FC = () => {
       type: 'expense',
       amount: 0,
       description: '',
-      transaction_date: new Date().toISOString().split('T')[0],
+      transaction_date: formatDateForInput(),
     });
   };
 
@@ -156,14 +157,7 @@ export const TransactionsPage: React.FC = () => {
     return formatted;
   };
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  // formatDate is now handled by formatUTCDate from dateUtils
 
   // Get transaction type style
   const getTypeStyle = (type: string) => {
@@ -301,7 +295,7 @@ export const TransactionsPage: React.FC = () => {
                   return (
                     <tr key={transaction.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(transaction.transaction_date)}
+                        {formatUTCDate(transaction.transaction_date)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div className="font-medium">{transaction.description}</div>

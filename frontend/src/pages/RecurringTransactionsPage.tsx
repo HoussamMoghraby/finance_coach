@@ -10,6 +10,7 @@ import {
   RecurringTransactionDetection,
 } from '@/services/recurringTransactions';
 import { categoriesAPI, Category } from '@/services/categories';
+import { formatDateForInput, formatUTCDate } from '@/utils/dateUtils';
 
 const FREQUENCY_OPTIONS = [
   { value: 'daily', label: 'Daily' },
@@ -28,7 +29,7 @@ export const RecurringTransactionsPage = () => {
     description: '',
     expected_amount: 0,
     frequency: 'monthly',
-    next_expected_date: new Date().toISOString().split('T')[0],
+    next_expected_date: formatDateForInput(),
     is_active: true,
     confidence_score: 1.0,
   });
@@ -91,7 +92,7 @@ export const RecurringTransactionsPage = () => {
       description: '',
       expected_amount: 0,
       frequency: 'monthly',
-      next_expected_date: new Date().toISOString().split('T')[0],
+      next_expected_date: formatDateForInput(),
       is_active: true,
       confidence_score: 1.0,
     });
@@ -141,7 +142,7 @@ export const RecurringTransactionsPage = () => {
       description: detection.description,
       expected_amount: detection.expected_amount,
       frequency: detection.frequency,
-      next_expected_date: new Date().toISOString().split('T')[0],
+      next_expected_date: formatDateForInput(),
       category_id: detection.category_id,
       is_active: true,
       confidence_score: detection.confidence_score,
@@ -275,7 +276,7 @@ export const RecurringTransactionsPage = () => {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Next Due</span>
                       <span className="text-gray-900">
-                        {new Date(rec.next_expected_date).toLocaleDateString()}
+                        {formatUTCDate(rec.next_expected_date)}
                       </span>
                     </div>
                     {rec.confidence_score < 1.0 && (
@@ -395,7 +396,7 @@ export const RecurringTransactionsPage = () => {
                         : `In ${daysUntil} days`}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {new Date(rec.next_expected_date).toLocaleDateString()}
+                      {formatUTCDate(rec.next_expected_date)}
                     </div>
                   </div>
                 </div>
