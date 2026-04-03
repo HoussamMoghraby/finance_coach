@@ -27,7 +27,7 @@ import {
   IonRow,
   IonCol,
 } from '@ionic/react';
-import { closeOutline, arrowForwardOutline } from 'ionicons/icons';
+import { closeOutline, arrowForwardOutline, filterOutline } from 'ionicons/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionsAPI, Transaction, TransactionCreate, TransactionFilters } from '@/services/transactions';
 import { accountsAPI } from '@/services/accounts';
@@ -43,8 +43,10 @@ const TRANSACTION_TYPES = [
 export const TransactionsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({ limit: 100 });
+  const [tempFilters, setTempFilters] = useState<TransactionFilters>({ limit: 100 });
 
   const [formData, setFormData] = useState<TransactionCreate>({
     account_id: 0,
@@ -213,87 +215,20 @@ export const TransactionsPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold">Transactions</h1>
-        <IonText color="medium">
-          <p className="text-sm">Track your income and expenses</p>
-        </IonText>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">Transactions</h1>
+          <IonText color="medium">
+            <p className="text-sm">Track your income and expenses</p>
+          </IonText>
+        </div>
+        <IonButton fill="clear" onClick={() => {
+          setTempFilters(filters);
+          setIsFilterModalOpen(true);
+        }}>
+          <IonIcon icon={filterOutline} slot="icon-only" />
+        </IonButton>
       </div>
-
-      {/* Filters */}
-      <IonCard>
-        <IonCardContent>
-          <IonGrid className="ion-no-padding">
-            <IonRow>
-              <IonCol size="12" sizeMd="6" sizeLg="3">
-                <IonItem>
-                  <IonLabel position="stacked">Account</IonLabel>
-                  <IonSelect
-                    value={filters.account_id || ''}
-                    onIonChange={(e) =>
-                      setFilters({ ...filters, account_id: e.detail.value ? parseInt(e.detail.value) : undefined })
-                    }
-                  >
-                    <IonSelectOption value="">All Accounts</IonSelectOption>
-                    {accounts?.map((account) => (
-                      <IonSelectOption key={account.id} value={account.id}>
-                        {account.name}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                </IonItem>
-              </IonCol>
-
-              <IonCol size="12" sizeMd="6" sizeLg="3">
-                <IonItem>
-                  <IonLabel position="stacked">Category</IonLabel>
-                  <IonSelect
-                    value={filters.category_id || ''}
-                    onIonChange={(e) =>
-                      setFilters({ ...filters, category_id: e.detail.value ? parseInt(e.detail.value) : undefined })
-                    }
-                  >
-                    <IonSelectOption value="">All Categories</IonSelectOption>
-                    {categories?.map((category) => (
-                      <IonSelectOption key={category.id} value={category.id}>
-                        {category.name}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                </IonItem>
-              </IonCol>
-
-              <IonCol size="12" sizeMd="6" sizeLg="3">
-                <IonItem>
-                  <IonLabel position="stacked">Type</IonLabel>
-                  <IonSelect
-                    value={filters.type || ''}
-                    onIonChange={(e) => setFilters({ ...filters, type: e.detail.value || undefined })}
-                  >
-                    <IonSelectOption value="">All Types</IonSelectOption>
-                    {TRANSACTION_TYPES.map((type) => (
-                      <IonSelectOption key={type.value} value={type.value}>
-                        {type.label}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                </IonItem>
-              </IonCol>
-
-              <IonCol size="12" sizeMd="6" sizeLg="3" className="flex items-end">
-                <IonButton
-                  fill="outline"
-                  expand="block"
-                  onClick={() => setFilters({ limit: 100 })}
-                  className="w-full"
-                >
-                  Clear Filters
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonCardContent>
-      </IonCard>
 
       {/* Add Transaction Button */}
       <div className="flex justify-center py-2">
@@ -396,6 +331,113 @@ export const TransactionsPage: React.FC = () => {
           </IonCard>
         </div>
       )}
+
+      {/* Filter Modal */}
+      <IonModal
+        isOpen={isFilterModalOpen}
+        onDidDismiss={() => setIsFilterModalOpen(false)}
+      >
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Filter Transactions</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => setIsFilterModalOpen(false)}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <IonGrid className="ion-no-padding">
+            <IonRow>
+              <IonCol size="12">
+                <IonItem>
+                  <IonLabel position="stacked">Account</IonLabel>
+                  <IonSelect
+                    interface="action-sheet"
+                    value={tempFilters.account_id || ''}
+                    onIonChange={(e) =>
+                      setTempFilters({ ...tempFilters, account_id: e.detail.value ? parseInt(e.detail.value) : undefined })
+                    }
+                  >
+                    <IonSelectOption value="">All Accounts</IonSelectOption>
+                    {accounts?.map((account) => (
+                      <IonSelectOption key={account.id} value={account.id}>
+                        {account.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
+
+              <IonCol size="12">
+                <IonItem>
+                  <IonLabel position="stacked">Category</IonLabel>
+                  <IonSelect
+                    interface="action-sheet"
+                    value={tempFilters.category_id || ''}
+                    onIonChange={(e) =>
+                      setTempFilters({ ...tempFilters, category_id: e.detail.value ? parseInt(e.detail.value) : undefined })
+                    }
+                  >
+                    <IonSelectOption value="">All Categories</IonSelectOption>
+                    {categories?.map((category) => (
+                      <IonSelectOption key={category.id} value={category.id}>
+                        {category.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
+
+              <IonCol size="12">
+                <IonItem>
+                  <IonLabel position="stacked">Type</IonLabel>
+                  <IonSelect
+                    interface="action-sheet"
+                    value={tempFilters.type || ''}
+                    onIonChange={(e) => setTempFilters({ ...tempFilters, type: e.detail.value || undefined })}
+                  >
+                    <IonSelectOption value="">All Types</IonSelectOption>
+                    {TRANSACTION_TYPES.map((type) => (
+                      <IonSelectOption key={type.value} value={type.value}>
+                        {type.label}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
+
+              <IonCol size="12" className="mt-4">
+                <div className="flex space-x-3">
+                  <IonButton
+                    fill="outline"
+                    expand="block"
+                    onClick={() => {
+                      setFilters({ limit: 100 });
+                      setTempFilters({ limit: 100 });
+                      setIsFilterModalOpen(false);
+                    }}
+                    className="flex-1"
+                  >
+                    Clear Filters
+                  </IonButton>
+                  <IonButton
+                    expand="block"
+                    onClick={() => {
+                      setFilters(tempFilters);
+                      setIsFilterModalOpen(false);
+                    }}
+                    className="flex-1"
+                  >
+                    Filter
+                  </IonButton>
+                </div>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </IonContent>
+      </IonModal>
 
       {/* Create/Edit Modal */}
       <IonModal
