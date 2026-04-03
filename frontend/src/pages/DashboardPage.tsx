@@ -1,7 +1,7 @@
 /**
  * Dashboard page - Comprehensive financial overview
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   IonCard,
   IonCardHeader,
@@ -15,7 +15,10 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonIcon,
 } from '@ionic/react';
+import { sparklesOutline } from 'ionicons/icons';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { reportsAPI, DashboardData } from '@/services/reports';
 import { budgetsAPI } from '@/services/budgets';
@@ -23,6 +26,22 @@ import { getDateRange } from '@/utils/dateUtils';
 
 export const DashboardPage = () => {
   const [dateRange, setDateRange] = useState('current_month');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const aiSuggestions = [
+    "What were my top expenses last month?",
+    "How much did I spend on dining out?",
+    "Show me my spending trends",
+  ];
+
+  // Rotate AI suggestions every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuestionIndex((prev) => (prev + 1) % aiSuggestions.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Get date range using centralized utility
   const { startDate, endDate } = getDateRange(dateRange);
@@ -62,7 +81,8 @@ export const DashboardPage = () => {
     : '0.0';
 
   return (
-    <div className="space-y-4">
+    <>
+    <div className="space-y-4" style={{ paddingBottom: '80px' }}>
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex-1">
@@ -334,5 +354,40 @@ export const DashboardPage = () => {
         </IonCard>
       )}
     </div>
+
+    {/* Floating AI Input */}
+    <div
+      className="fixed bottom-0 left-0 right-0 px-4 pb-4 bg-gradient-to-t from-white via-white to-transparent"
+      style={{
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+        paddingTop: '20px',
+        zIndex: 1000
+      }}
+    >
+      <div
+        onClick={() => navigate('/ai-coach')}
+        className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full px-5 py-3 shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}
+      >
+        <IonIcon icon={sparklesOutline} className="text-white text-xl" />
+        <div className="flex-1">
+          <IonText color="light">
+            <p className="text-xs font-medium opacity-90">{aiSuggestions[currentQuestionIndex]}</p>
+          </IonText>
+        </div>
+        <div className="bg-white bg-opacity-20 rounded-full px-3 py-1">
+          <IonText color="light">
+            <p className="text-xs font-semibold">✨ AI</p>
+          </IonText>
+        </div>
+      </div>
+    </div>
+    </>
   );
 };
