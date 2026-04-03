@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { MainLayout } from '@/components/MainLayout'
@@ -13,97 +14,106 @@ import { ReportsPage } from '@/pages/ReportsPage'
 import { InsightsPage } from '@/pages/InsightsPage'
 import { AICoachPage } from '@/pages/AICoachPage'
 
+setupIonicReact({
+  mode: 'ios', // Use iOS mode for consistent styling across platforms
+  rippleEffect: false,
+});
+
 function App() {
   return (
-    <Router>
+    <IonApp>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <DashboardPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/accounts"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <AccountsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/transactions"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <TransactionsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/budgets"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <BudgetsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recurring"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <RecurringTransactionsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <ReportsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/insights"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <InsightsPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ai-coach"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <AICoachPage />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+        <BrowserRouter>
+          <IonRouterOutlet>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <DashboardPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/accounts"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <AccountsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <TransactionsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/budgets"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BudgetsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/recurring"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <RecurringTransactionsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ReportsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/insights"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <InsightsPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai-coach"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <AICoachPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </IonRouterOutlet>
+        </BrowserRouter>
       </AuthProvider>
-    </Router>
+    </IonApp>
   )
 }
 

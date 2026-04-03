@@ -1,14 +1,25 @@
 /**
  * Notification Bell Component - Shows notification indicator and dropdown
  */
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
+import {
+  IonIcon,
+  IonBadge,
+  IonButton,
+  IonPopover,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonText,
+  IonSpinner,
+} from '@ionic/react';
+import { notificationsOutline, closeOutline } from 'ionicons/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsAPI, Notification } from '@/services/notifications';
 import { formatTimeAgo } from '@/utils/dateUtils';
 
 export const NotificationBell = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [popoverEvent, setPopoverEvent] = useState<any>(undefined);
   const queryClient = useQueryClient();
 
   // Fetch notifications summary
@@ -20,9 +31,8 @@ export const NotificationBell = () => {
 
   // Fetch notifications
   const { data: notifications, isLoading } = useQuery<Notification[]>({
-    queryKey: ['notifications', isOpen],
+    queryKey: ['notifications'],
     queryFn: () => notificationsAPI.getAll(),
-    enabled: isOpen,
   });
 
   // Mark as read mutation
@@ -52,23 +62,6 @@ export const NotificationBell = () => {
     },
   });
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.is_read) {
       markAsReadMutation.mutate(notification.id);
@@ -92,109 +85,101 @@ export const NotificationBell = () => {
     }
   };
 
-  // formatTimeAgo is now imported from dateUtils
-
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Bell Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label="Notifications"
+    <>
+      <IonButton
+        fill="clear"
+        onClick={(e) => setPopoverEvent(e.nativeEvent)}
+        className="relative"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-          />
-        </svg>
+        <IonIcon slot="icon-only" icon={notificationsOutline} />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+          <IonBadge
+            color="danger"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              fontSize: '10px',
+              minWidth: '18px',
+              height: '18px',
+            }}
+          >
             {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
+          </IonBadge>
         )}
-      </button>
+      </IonButton>
 
-      {/* Dropdown */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="font-semibold text-gray-900">Notifications</h3>
+      <IonPopover
+        isOpen={!!popoverEvent}
+        event={popoverEvent}
+        onDidDismiss={() => setPopoverEvent(undefined)}
+        style={{ '--width': '320px', '--max-height': '500px' }}
+      >
+        <div className="ion-padding">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-lg">Notifications</h3>
             {unreadCount > 0 && (
-              <button
+              <IonButton
+                size="small"
+                fill="clear"
                 onClick={() => markAllAsReadMutation.mutate()}
-                className="text-sm text-primary-600 hover:text-primary-700"
                 disabled={markAllAsReadMutation.isPending}
               >
                 Mark all read
-              </button>
+              </IonButton>
             )}
           </div>
 
-          {/* Notification List */}
-          <div className="max-h-96 overflow-y-auto">
-            {isLoading ? (
-              <div className="p-8 text-center text-gray-500">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-              </div>
-            ) : notifications && notifications.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                      !notification.is_read ? 'bg-blue-50' : ''
-                    }`}
-                    onClick={() => handleNotificationClick(notification)}
-                  >
-                    <div className="flex gap-3">
-                      <div className="text-2xl flex-shrink-0">
-                        {getNotificationIcon(notification.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="font-medium text-gray-900 text-sm">
-                            {notification.title}
-                          </p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteMutation.mutate(notification.id);
-                            }}
-                            className="text-gray-400 hover:text-gray-600 flex-shrink-0"
-                            aria-label="Delete notification"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatTimeAgo(notification.created_at)}
-                        </p>
-                      </div>
-                    </div>
+          {isLoading ? (
+            <div className="text-center py-8">
+              <IonSpinner />
+            </div>
+          ) : notifications && notifications.length > 0 ? (
+            <IonList lines="full" className="max-h-96 overflow-y-auto">
+              {notifications.map((notification) => (
+                <IonItem
+                  key={notification.id}
+                  button
+                  onClick={() => handleNotificationClick(notification)}
+                  style={{
+                    '--background': !notification.is_read ? 'var(--ion-color-light)' : 'transparent'
+                  }}
+                >
+                  <div slot="start" className="text-2xl">
+                    {getNotificationIcon(notification.type)}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <div className="text-4xl mb-2">🔔</div>
+                  <IonLabel className="ion-text-wrap">
+                    <h2 className="font-medium">{notification.title}</h2>
+                    <p className="text-sm">{notification.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {formatTimeAgo(notification.created_at)}
+                    </p>
+                  </IonLabel>
+                  <IonButton
+                    slot="end"
+                    fill="clear"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteMutation.mutate(notification.id);
+                    }}
+                  >
+                    <IonIcon icon={closeOutline} slot="icon-only" />
+                  </IonButton>
+                </IonItem>
+              ))}
+            </IonList>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <div className="text-4xl mb-2">🔔</div>
+              <IonText color="medium">
                 <p>No notifications</p>
-              </div>
-            )}
-          </div>
+              </IonText>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </IonPopover>
+    </>
   );
 };

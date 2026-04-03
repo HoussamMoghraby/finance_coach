@@ -2,6 +2,35 @@
  * Recurring Transactions page - Manage recurring bills, subscriptions, and income
  */
 import { useState } from 'react';
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonButton,
+  IonSpinner,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonBadge,
+  IonButtons,
+  IonIcon,
+  IonText,
+  IonSegment,
+  IonSegmentButton,
+  IonCheckbox,
+  IonGrid,
+  IonRow,
+  IonCol,
+} from '@ionic/react';
+import { closeOutline } from 'ionicons/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   recurringTransactionsAPI,
@@ -179,164 +208,160 @@ export const RecurringTransactionsPage = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading recurring transactions...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <IonSpinner />
+      </div>
+    );
   }
 
   const activeRecurring = recurring.filter((r) => r.is_active);
   const inactiveRecurring = recurring.filter((r) => !r.is_active);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Recurring Transactions</h1>
-        <button onClick={handleOpenCreate} className="btn btn-primary">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-2xl font-bold">Recurring Transactions</h1>
+          <IonText color="medium">
+            <p className="text-sm">Manage subscriptions and recurring bills</p>
+          </IonText>
+        </div>
+        <IonButton onClick={handleOpenCreate}>
           + Add Recurring
-        </button>
+        </IonButton>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200">
-        <button
-          onClick={() => setActiveTab('list')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'list'
-              ? 'text-primary-600 border-b-2 border-primary-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          All Recurring ({activeRecurring.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('upcoming')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'upcoming'
-              ? 'text-primary-600 border-b-2 border-primary-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          Upcoming ({upcoming.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('detect')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'detect'
-              ? 'text-primary-600 border-b-2 border-primary-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          🔍 Detect Patterns
-        </button>
-      </div>
+      <IonSegment value={activeTab} onIonChange={(e) => setActiveTab(e.detail.value as any)}>
+        <IonSegmentButton value="list">
+          <IonLabel>All ({activeRecurring.length})</IonLabel>
+        </IonSegmentButton>
+        <IonSegmentButton value="upcoming">
+          <IonLabel>Upcoming ({upcoming.length})</IonLabel>
+        </IonSegmentButton>
+        <IonSegmentButton value="detect">
+          <IonLabel>🔍 Detect</IonLabel>
+        </IonSegmentButton>
+      </IonSegment>
 
       {/* List Tab */}
       {activeTab === 'list' && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Active Recurring */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Active</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeRecurring.map((rec) => (
-                <div key={rec.id} className="card border-l-4 border-l-primary-500">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-2 flex-1">
-                      <span className="text-2xl">{getFrequencyIcon(rec.frequency)}</span>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{rec.description}</h3>
-                        <p className="text-xs text-gray-500">{getFrequencyLabel(rec.frequency)}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleOpenEdit(rec)}
-                        className="text-sm text-gray-600 hover:text-primary-600"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={() => handleDelete(rec.id)}
-                        className="text-sm text-gray-600 hover:text-red-600"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
+            <h2 className="text-lg font-semibold mb-3">Active</h2>
+            <IonGrid className="ion-no-padding">
+              <IonRow>
+                {activeRecurring.map((rec) => (
+                  <IonCol key={rec.id} size="12" sizeMd="6" sizeLg="4">
+                    <IonCard color="primary">
+                      <IonCardHeader>
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className="text-2xl">{getFrequencyIcon(rec.frequency)}</span>
+                            <div>
+                              <IonCardTitle className="text-base">{rec.description}</IonCardTitle>
+                              <IonText color="light">
+                                <p className="text-xs opacity-80">{getFrequencyLabel(rec.frequency)}</p>
+                              </IonText>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <IonButton fill="clear" size="small" onClick={() => handleOpenEdit(rec)}>
+                              ✏️
+                            </IonButton>
+                            <IonButton fill="clear" size="small" color="danger" onClick={() => handleDelete(rec.id)}>
+                              🗑️
+                            </IonButton>
+                          </div>
+                        </div>
+                      </IonCardHeader>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Amount</span>
-                      <span className="font-semibold text-gray-900">
-                        ${rec.expected_amount.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Category</span>
-                      <span className="text-gray-900">{getCategoryName(rec.category_id)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Next Due</span>
-                      <span className="text-gray-900">
-                        {formatUTCDate(rec.next_expected_date)}
-                      </span>
-                    </div>
-                    {rec.confidence_score < 1.0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Confidence</span>
-                        <span className="text-orange-600">
-                          {(rec.confidence_score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                      <IonCardContent>
+                        <IonText color="light">
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="opacity-80">Amount</span>
+                              <span className="font-semibold">${rec.expected_amount.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="opacity-80">Category</span>
+                              <span>{getCategoryName(rec.category_id)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="opacity-80">Next Due</span>
+                              <span>{formatUTCDate(rec.next_expected_date)}</span>
+                            </div>
+                            {rec.confidence_score < 1.0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="opacity-80">Confidence</span>
+                                <IonBadge color="warning">{(rec.confidence_score * 100).toFixed(0)}%</IonBadge>
+                              </div>
+                            )}
+                          </div>
+                        </IonText>
+                      </IonCardContent>
+                    </IonCard>
+                  </IonCol>
+                ))}
+              </IonRow>
+            </IonGrid>
 
             {activeRecurring.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                <div className="text-4xl mb-4">🔄</div>
-                <p>No active recurring transactions</p>
-                <p className="text-sm mt-2">Add recurring bills, subscriptions, or income</p>
-              </div>
+              <IonCard>
+                <IonCardContent className="text-center py-8">
+                  <div className="text-4xl mb-4">🔄</div>
+                  <IonText color="medium">
+                    <p>No active recurring transactions</p>
+                    <p className="text-sm mt-2">Add recurring bills, subscriptions, or income</p>
+                  </IonText>
+                </IonCardContent>
+              </IonCard>
             )}
           </div>
 
           {/* Inactive Recurring */}
           {inactiveRecurring.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Inactive</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {inactiveRecurring.map((rec) => (
-                  <div key={rec.id} className="card border-l-4 border-l-gray-300 opacity-60">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center gap-2 flex-1">
-                        <span className="text-2xl grayscale">{getFrequencyIcon(rec.frequency)}</span>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{rec.description}</h3>
-                          <p className="text-xs text-gray-500">{getFrequencyLabel(rec.frequency)}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleOpenEdit(rec)}
-                          className="text-sm text-gray-600 hover:text-primary-600"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => handleDelete(rec.id)}
-                          className="text-sm text-gray-600 hover:text-red-600"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      ${rec.expected_amount.toFixed(2)} • {getCategoryName(rec.category_id)}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h2 className="text-lg font-semibold mb-3">Inactive</h2>
+              <IonGrid className="ion-no-padding">
+                <IonRow>
+                  {inactiveRecurring.map((rec) => (
+                    <IonCol key={rec.id} size="12" sizeMd="6" sizeLg="4">
+                      <IonCard className="opacity-60">
+                        <IonCardContent>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 flex-1">
+                              <span className="text-2xl grayscale">{getFrequencyIcon(rec.frequency)}</span>
+                              <div>
+                                <h3 className="font-semibold">{rec.description}</h3>
+                                <IonText color="medium">
+                                  <p className="text-xs">{getFrequencyLabel(rec.frequency)}</p>
+                                </IonText>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <IonButton fill="clear" size="small" onClick={() => handleOpenEdit(rec)}>
+                                ✏️
+                              </IonButton>
+                              <IonButton fill="clear" size="small" color="danger" onClick={() => handleDelete(rec.id)}>
+                                🗑️
+                              </IonButton>
+                            </div>
+                          </div>
+                          <IonText color="medium">
+                            <p className="text-sm mt-2">
+                              ${rec.expected_amount.toFixed(2)} • {getCategoryName(rec.category_id)}
+                            </p>
+                          </IonText>
+                        </IonCardContent>
+                      </IonCard>
+                    </IonCol>
+                  ))}
+                </IonRow>
+              </IonGrid>
             </div>
           )}
         </div>
@@ -345,7 +370,7 @@ export const RecurringTransactionsPage = () => {
       {/* Upcoming Tab */}
       {activeTab === 'upcoming' && (
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Next 30 Days</h2>
+          <h2 className="text-lg font-semibold mb-3">Next 30 Days</h2>
           <div className="space-y-3">
             {upcoming.map((rec) => {
               const daysUntil = Math.ceil(
@@ -355,59 +380,53 @@ export const RecurringTransactionsPage = () => {
               const isOverdue = daysUntil < 0;
               const isSoon = daysUntil <= 7;
 
+              const cardColor = isOverdue ? 'danger' : isSoon ? 'warning' : undefined;
               return (
-                <div
-                  key={rec.id}
-                  className={`card flex justify-between items-center ${
-                    isOverdue
-                      ? 'border-l-4 border-l-red-500 bg-red-50'
-                      : isSoon
-                      ? 'border-l-4 border-l-orange-500 bg-orange-50'
-                      : 'border-l-4 border-l-primary-500'
-                  }`}
-                >
-                  <div className="flex items-center gap-4 flex-1">
-                    <span className="text-3xl">{getFrequencyIcon(rec.frequency)}</span>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{rec.description}</h3>
-                      <p className="text-sm text-gray-600">
-                        {getCategoryName(rec.category_id)} • {getFrequencyLabel(rec.frequency)}
-                      </p>
-                    </div>
-                  </div>
+                <IonCard key={rec.id} color={cardColor}>
+                  <IonCardContent>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-4 flex-1">
+                        <span className="text-3xl">{getFrequencyIcon(rec.frequency)}</span>
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{rec.description}</h3>
+                          <IonText color="medium">
+                            <p className="text-sm">
+                              {getCategoryName(rec.category_id)} • {getFrequencyLabel(rec.frequency)}
+                            </p>
+                          </IonText>
+                        </div>
+                      </div>
 
-                  <div className="text-right">
-                    <div className="font-bold text-lg text-gray-900">
-                      ${rec.expected_amount.toFixed(2)}
+                      <div className="text-right">
+                        <div className="font-bold text-lg">
+                          ${rec.expected_amount.toFixed(2)}
+                        </div>
+                        <IonBadge color={isOverdue ? 'danger' : isSoon ? 'warning' : 'medium'}>
+                          {isOverdue
+                            ? `Overdue ${Math.abs(daysUntil)} days`
+                            : daysUntil === 0
+                            ? 'Due Today'
+                            : `In ${daysUntil} days`}
+                        </IonBadge>
+                        <IonText color="medium">
+                          <p className="text-xs mt-1">{formatUTCDate(rec.next_expected_date)}</p>
+                        </IonText>
+                      </div>
                     </div>
-                    <div
-                      className={`text-sm font-medium ${
-                        isOverdue
-                          ? 'text-red-600'
-                          : isSoon
-                          ? 'text-orange-600'
-                          : 'text-gray-600'
-                      }`}
-                    >
-                      {isOverdue
-                        ? `Overdue ${Math.abs(daysUntil)} days`
-                        : daysUntil === 0
-                        ? 'Due Today'
-                        : `In ${daysUntil} days`}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatUTCDate(rec.next_expected_date)}
-                    </div>
-                  </div>
-                </div>
+                  </IonCardContent>
+                </IonCard>
               );
             })}
 
             {upcoming.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                <div className="text-4xl mb-4">✅</div>
-                <p>No upcoming recurring transactions in the next 30 days</p>
-              </div>
+              <IonCard>
+                <IonCardContent className="text-center py-8">
+                  <div className="text-4xl mb-4">✅</div>
+                  <IonText color="medium">
+                    <p>No upcoming recurring transactions in the next 30 days</p>
+                  </IonText>
+                </IonCardContent>
+              </IonCard>
             )}
           </div>
         </div>
@@ -416,245 +435,246 @@ export const RecurringTransactionsPage = () => {
       {/* Detect Tab */}
       {activeTab === 'detect' && (
         <div className="space-y-4">
-          <div className="card bg-blue-50 border-blue-200">
-            <h3 className="font-semibold text-blue-900 mb-2">🔍 Pattern Detection</h3>
-            <p className="text-sm text-blue-800 mb-4">
-              Analyze your transaction history to automatically detect recurring patterns like
-              subscriptions, bills, and regular income.
-            </p>
-            <button
-              onClick={handleDetect}
-              disabled={detectMutation.isPending}
-              className="btn btn-primary"
-            >
-              {detectMutation.isPending ? 'Detecting...' : 'Detect Patterns'}
-            </button>
-          </div>
+          <IonCard color="secondary">
+            <IonCardContent>
+              <IonText color="light">
+                <h3 className="font-semibold mb-2">🔍 Pattern Detection</h3>
+                <p className="text-sm mb-4 opacity-90">
+                  Analyze your transaction history to automatically detect recurring patterns like
+                  subscriptions, bills, and regular income.
+                </p>
+              </IonText>
+              <IonButton
+                onClick={handleDetect}
+                disabled={detectMutation.isPending}
+                expand="block"
+              >
+                {detectMutation.isPending ? 'Detecting...' : 'Detect Patterns'}
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
 
           {detectMutation.data && detectMutation.data.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold mb-3">
                 Detected {detectMutation.data.length} Patterns
               </h3>
               <div className="space-y-3">
                 {detectMutation.data.map((detection, index) => (
-                  <div key={index} className="card border-l-4 border-l-green-500">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-semibold text-gray-900">{detection.description}</h4>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                            {(detection.confidence_score * 100).toFixed(0)}% confidence
-                          </span>
+                  <IonCard key={index} color="success">
+                    <IonCardContent>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <IonText color="light">
+                              <h4 className="font-semibold">{detection.description}</h4>
+                            </IonText>
+                            <IonBadge color="light">
+                              {(detection.confidence_score * 100).toFixed(0)}% confidence
+                            </IonBadge>
+                          </div>
+                          <IonText color="light">
+                            <div className="grid grid-cols-2 gap-3 text-sm opacity-90">
+                              <div>
+                                <span>Amount: </span>
+                                <span className="font-medium">${detection.expected_amount.toFixed(2)}</span>
+                              </div>
+                              <div>
+                                <span>Frequency: </span>
+                                <span className="font-medium">{getFrequencyLabel(detection.frequency)}</span>
+                              </div>
+                              <div>
+                                <span>Occurrences: </span>
+                                <span className="font-medium">{detection.transaction_count}</span>
+                              </div>
+                              <div>
+                                <span>Category: </span>
+                                <span className="font-medium">{getCategoryName(detection.category_id)}</span>
+                              </div>
+                            </div>
+                            <p className="mt-2 text-xs opacity-75">
+                              Sample dates:{' '}
+                              {detection.sample_dates
+                                .map((d) => new Date(d).toLocaleDateString())
+                                .join(', ')}
+                            </p>
+                          </IonText>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <span className="text-gray-600">Amount: </span>
-                            <span className="font-medium">
-                              ${detection.expected_amount.toFixed(2)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Frequency: </span>
-                            <span className="font-medium">
-                              {getFrequencyLabel(detection.frequency)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Occurrences: </span>
-                            <span className="font-medium">{detection.transaction_count}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Category: </span>
-                            <span className="font-medium">
-                              {getCategoryName(detection.category_id)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-xs text-gray-500">
-                          Sample dates:{' '}
-                          {detection.sample_dates
-                            .map((d) => new Date(d).toLocaleDateString())
-                            .join(', ')}
-                        </div>
+                        <IonButton
+                          onClick={() => handleAddDetection(detection)}
+                          size="small"
+                          className="ml-4"
+                        >
+                          + Add
+                        </IonButton>
                       </div>
-                      <button
-                        onClick={() => handleAddDetection(detection)}
-                        className="btn btn-primary btn-sm ml-4"
-                      >
-                        + Add
-                      </button>
-                    </div>
-                  </div>
+                    </IonCardContent>
+                  </IonCard>
                 ))}
               </div>
             </div>
           )}
 
           {detectMutation.data && detectMutation.data.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <div className="text-4xl mb-4">🔍</div>
-              <p>No recurring patterns detected</p>
-              <p className="text-sm mt-2">
-                Try adding more transactions or adjusting detection parameters
-              </p>
-            </div>
+            <IonCard>
+              <IonCardContent className="text-center py-8">
+                <div className="text-4xl mb-4">🔍</div>
+                <IonText color="medium">
+                  <p>No recurring patterns detected</p>
+                  <p className="text-sm mt-2">
+                    Try adding more transactions or adjusting detection parameters
+                  </p>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
           )}
         </div>
       )}
 
       {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingRecurring ? 'Edit Recurring Transaction' : 'Add Recurring Transaction'}
-              </h2>
-              <button
+      <IonModal
+        isOpen={isModalOpen}
+        onDidDismiss={() => {
+          setIsModalOpen(false);
+          resetForm();
+        }}
+      >
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>
+              {editingRecurring ? 'Edit Recurring Transaction' : 'Add Recurring Transaction'}
+            </IonTitle>
+            <IonButtons slot="end">
+              <IonButton
                 onClick={() => {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
               >
-                ×
-              </button>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <form onSubmit={handleSubmit}>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Description *</IonLabel>
+              <IonInput
+                type="text"
+                value={formData.description}
+                onIonInput={(e) =>
+                  setFormData({ ...formData, description: (e.target as HTMLIonInputElement).value as string })
+                }
+                required
+                placeholder="e.g., Netflix Subscription, Rent Payment"
+              />
+            </IonItem>
+
+            <IonGrid className="ion-no-padding">
+              <IonRow>
+                <IonCol size="6">
+                  <IonItem className="mb-4">
+                    <IonLabel position="stacked">Amount *</IonLabel>
+                    <IonInput
+                      type="number"
+                      value={formData.expected_amount}
+                      onIonInput={(e) =>
+                        setFormData({
+                          ...formData,
+                          expected_amount: parseFloat((e.target as HTMLIonInputElement).value as string),
+                        })
+                      }
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </IonItem>
+                </IonCol>
+
+                <IonCol size="6">
+                  <IonItem className="mb-4">
+                    <IonLabel position="stacked">Frequency *</IonLabel>
+                    <IonSelect
+                      value={formData.frequency}
+                      onIonChange={(e) => setFormData({ ...formData, frequency: e.detail.value })}
+                    >
+                      {FREQUENCY_OPTIONS.map((option) => (
+                        <IonSelectOption key={option.value} value={option.value}>
+                          {option.label}
+                        </IonSelectOption>
+                      ))}
+                    </IonSelect>
+                  </IonItem>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Category</IonLabel>
+              <IonSelect
+                value={formData.category_id || ''}
+                onIonChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    category_id: e.detail.value ? parseInt(e.detail.value) : undefined,
+                  })
+                }
+              >
+                <IonSelectOption value="">Uncategorized</IonSelectOption>
+                {categories.map((category: Category) => (
+                  <IonSelectOption key={category.id} value={category.id}>
+                    {category.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Next Expected Date *</IonLabel>
+              <IonInput
+                type="date"
+                value={formData.next_expected_date}
+                onIonInput={(e) =>
+                  setFormData({ ...formData, next_expected_date: (e.target as HTMLIonInputElement).value as string })
+                }
+                required
+              />
+            </IonItem>
+
+            <IonItem className="mb-6">
+              <IonLabel>Active</IonLabel>
+              <IonCheckbox
+                checked={formData.is_active}
+                onIonChange={(e) => setFormData({ ...formData, is_active: e.detail.checked })}
+                slot="end"
+              />
+            </IonItem>
+
+            <div className="flex gap-3">
+              <IonButton
+                fill="outline"
+                expand="block"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  resetForm();
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </IonButton>
+              <IonButton
+                type="submit"
+                expand="block"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="flex-1"
+              >
+                {editingRecurring ? 'Update' : 'Create'}
+              </IonButton>
             </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="input"
-                  required
-                  placeholder="e.g., Netflix Subscription, Rent Payment"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="expected_amount" className="block text-sm font-medium text-gray-700 mb-1">
-                    Amount
-                  </label>
-                  <input
-                    type="number"
-                    id="expected_amount"
-                    value={formData.expected_amount}
-                    onChange={(e) =>
-                      setFormData({ ...formData, expected_amount: parseFloat(e.target.value) })
-                    }
-                    className="input"
-                    step="0.01"
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
-                    Frequency
-                  </label>
-                  <select
-                    id="frequency"
-                    value={formData.frequency}
-                    onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                    className="input"
-                  >
-                    {FREQUENCY_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  id="category_id"
-                  value={formData.category_id || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      category_id: e.target.value ? parseInt(e.target.value) : undefined,
-                    })
-                  }
-                  className="input"
-                >
-                  <option value="">Uncategorized</option>
-                  {categories.map((category: Category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="next_expected_date"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Next Expected Date
-                </label>
-                <input
-                  type="date"
-                  id="next_expected_date"
-                  value={formData.next_expected_date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, next_expected_date: e.target.value })
-                  }
-                  className="input"
-                  required
-                />
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="mr-2"
-                />
-                <label htmlFor="is_active" className="text-sm text-gray-700">
-                  Active
-                </label>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    resetForm();
-                  }}
-                  className="btn btn-secondary flex-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary flex-1"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {editingRecurring ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          </form>
+        </IonContent>
+      </IonModal>
     </div>
   );
 };

@@ -2,6 +2,32 @@
  * Accounts page - manage financial accounts and wallets
  */
 import { useState } from 'react';
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonButton,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonText,
+  IonSpinner,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonBadge,
+  IonButtons,
+  IonIcon,
+} from '@ionic/react';
+import { closeOutline } from 'ionicons/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { accountsAPI, Account, AccountCreate } from '@/services/accounts';
 
@@ -124,207 +150,229 @@ export const AccountsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Loading accounts...</div>
+        <IonSpinner />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">Error loading accounts. Please try again.</p>
-      </div>
+      <IonCard color="danger">
+        <IonCardContent>
+          <IonText color="light">
+            <p>Error loading accounts. Please try again.</p>
+          </IonText>
+        </IonCardContent>
+      </IonCard>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Accounts & Wallets</h1>
-          <p className="text-gray-600 mt-1">Manage your financial accounts</p>
+          <h1 className="text-2xl font-bold">Accounts & Wallets</h1>
+          <IonText color="medium">
+            <p className="text-sm">Manage your financial accounts</p>
+          </IonText>
         </div>
-        <button onClick={handleOpenCreate} className="btn btn-primary">
-          + Add Account
-        </button>
+        <IonButton onClick={handleOpenCreate}>+ Add Account</IonButton>
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg p-6 text-white">
-        <h3 className="text-lg font-medium opacity-90">Total Balance</h3>
-        <p className="text-4xl font-bold mt-2">{formatBalance(getTotalBalance(), 'USD')}</p>
-        <p className="text-sm opacity-80 mt-1">
-          Across {accounts?.filter((acc) => acc.is_active).length || 0} active accounts
-        </p>
-      </div>
+      <IonCard color="primary">
+        <IonCardContent>
+          <IonText color="light">
+            <p className="text-sm font-medium opacity-90">Total Balance</p>
+            <h2 className="text-3xl font-bold mt-1">{formatBalance(getTotalBalance(), 'USD')}</h2>
+            <p className="text-sm opacity-80 mt-1">
+              Across {accounts?.filter((acc) => acc.is_active).length || 0} active accounts
+            </p>
+          </IonText>
+        </IonCardContent>
+      </IonCard>
 
       {/* Accounts Grid */}
       {accounts && accounts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {accounts.map((account) => (
-            <div
-              key={account.id}
-              className={`card ${!account.is_active ? 'opacity-50' : ''}`}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center space-x-3">
-                  <span className="text-3xl">{getAccountIcon(account.type)}</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{account.name}</h3>
-                    <p className="text-sm text-gray-500 capitalize">
-                      {account.type.replace('_', ' ')}
-                    </p>
-                  </div>
-                </div>
-                {!account.is_active && (
-                  <span className="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded">
-                    Inactive
-                  </span>
-                )}
-              </div>
+        <IonGrid className="ion-no-padding">
+          <IonRow>
+            {accounts.map((account) => (
+              <IonCol key={account.id} size="12" sizeMd="6" sizeLg="4">
+                <IonCard className={!account.is_active ? 'opacity-50' : ''}>
+                  <IonCardHeader>
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-3xl">{getAccountIcon(account.type)}</span>
+                        <div>
+                          <IonCardTitle className="text-base">{account.name}</IonCardTitle>
+                          <IonText color="medium">
+                            <p className="text-sm capitalize">
+                              {account.type.replace('_', ' ')}
+                            </p>
+                          </IonText>
+                        </div>
+                      </div>
+                      {!account.is_active && (
+                        <IonBadge color="medium">Inactive</IonBadge>
+                      )}
+                    </div>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <div className="mb-3">
+                      <p className="text-2xl font-bold">
+                        {formatBalance(account.current_balance, account.currency)}
+                      </p>
+                      <IonText color="medium">
+                        <p className="text-xs mt-1">
+                          Opening: {formatBalance(account.opening_balance, account.currency)}
+                        </p>
+                      </IonText>
+                    </div>
 
-              <div className="mb-4">
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatBalance(account.current_balance, account.currency)}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Opening: {formatBalance(account.opening_balance, account.currency)}
-                </p>
-              </div>
-
-              <div className="flex space-x-2 pt-4 border-t">
-                <button
-                  onClick={() => handleOpenEdit(account)}
-                  className="btn btn-secondary flex-1"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(account.id)}
-                  className="btn bg-red-50 text-red-600 hover:bg-red-100 flex-1"
-                  disabled={deleteMutation.isPending}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                    <div className="flex space-x-2 pt-3 border-t">
+                      <IonButton
+                        fill="outline"
+                        size="small"
+                        expand="block"
+                        onClick={() => handleOpenEdit(account)}
+                        className="flex-1"
+                      >
+                        Edit
+                      </IonButton>
+                      <IonButton
+                        fill="outline"
+                        size="small"
+                        expand="block"
+                        color="danger"
+                        onClick={() => handleDelete(account.id)}
+                        disabled={deleteMutation.isPending}
+                        className="flex-1"
+                      >
+                        Delete
+                      </IonButton>
+                    </div>
+                  </IonCardContent>
+                </IonCard>
+              </IonCol>
+            ))}
+          </IonRow>
+        </IonGrid>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-          <span className="text-6xl">💰</span>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No accounts yet</h3>
-          <p className="mt-2 text-gray-500">Get started by creating your first account</p>
-          <button onClick={handleOpenCreate} className="btn btn-primary mt-4">
-            Create Account
-          </button>
+        <div className="text-center py-12">
+          <IonCard>
+            <IonCardContent>
+              <span className="text-6xl">💰</span>
+              <h3 className="mt-4 text-lg font-medium">No accounts yet</h3>
+              <IonText color="medium">
+                <p className="mt-2">Get started by creating your first account</p>
+              </IonText>
+              <IonButton onClick={handleOpenCreate} className="mt-4">
+                Create Account
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
         </div>
       )}
 
       {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-2xl font-bold mb-4">
-              {editingAccount ? 'Edit Account' : 'Create New Account'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Account Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="input mt-1"
-                  placeholder="e.g., Chase Checking"
-                  required
-                />
-              </div>
+      <IonModal isOpen={isModalOpen} onDidDismiss={() => {
+        setIsModalOpen(false);
+        setEditingAccount(null);
+        resetForm();
+      }}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>{editingAccount ? 'Edit Account' : 'Create New Account'}</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => {
+                setIsModalOpen(false);
+                setEditingAccount(null);
+                resetForm();
+              }}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <form onSubmit={handleSubmit}>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Account Name *</IonLabel>
+              <IonInput
+                type="text"
+                value={formData.name}
+                onIonChange={(e) => setFormData({ ...formData, name: e.detail.value! })}
+                placeholder="e.g., Chase Checking"
+                required
+              />
+            </IonItem>
 
-              <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-                  Account Type *
-                </label>
-                <select
-                  id="type"
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="input mt-1"
-                  required
-                >
-                  {ACCOUNT_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.icon} {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Account Type *</IonLabel>
+              <IonSelect
+                value={formData.type}
+                onIonChange={(e) => setFormData({ ...formData, type: e.detail.value })}
+              >
+                {ACCOUNT_TYPES.map((type) => (
+                  <IonSelectOption key={type.value} value={type.value}>
+                    {type.icon} {type.label}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-              <div>
-                <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
-                  Currency
-                </label>
-                <select
-                  id="currency"
-                  value={formData.currency}
-                  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                  className="input mt-1"
-                >
-                  {CURRENCIES.map((curr) => (
-                    <option key={curr} value={curr}>
-                      {curr}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Currency</IonLabel>
+              <IonSelect
+                value={formData.currency}
+                onIonChange={(e) => setFormData({ ...formData, currency: e.detail.value })}
+              >
+                {CURRENCIES.map((curr) => (
+                  <IonSelectOption key={curr} value={curr}>
+                    {curr}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-              <div>
-                <label
-                  htmlFor="opening_balance"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Opening Balance
-                </label>
-                <input
-                  type="number"
-                  id="opening_balance"
-                  value={formData.opening_balance}
-                  onChange={(e) =>
-                    setFormData({ ...formData, opening_balance: parseFloat(e.target.value) })
-                  }
-                  className="input mt-1"
-                  step="0.01"
-                />
-              </div>
+            <IonItem className="mb-6">
+              <IonLabel position="stacked">Opening Balance</IonLabel>
+              <IonInput
+                type="number"
+                value={formData.opening_balance}
+                onIonChange={(e) =>
+                  setFormData({ ...formData, opening_balance: parseFloat(e.detail.value!) })
+                }
+                step="0.01"
+              />
+            </IonItem>
 
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setEditingAccount(null);
-                    resetForm();
-                  }}
-                  className="btn btn-secondary flex-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary flex-1"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {editingAccount ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <div className="flex space-x-3">
+              <IonButton
+                fill="outline"
+                expand="block"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingAccount(null);
+                  resetForm();
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </IonButton>
+              <IonButton
+                type="submit"
+                expand="block"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="flex-1"
+              >
+                {editingAccount ? 'Update' : 'Create'}
+              </IonButton>
+            </div>
+          </form>
+        </IonContent>
+      </IonModal>
     </div>
   );
 };

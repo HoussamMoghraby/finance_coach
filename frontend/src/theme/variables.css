@@ -1,0 +1,147 @@
+/* Ionic Variables and Theming */
+/*
+ * Centralized theme configuration for easy branding updates
+ * Modify these CSS variables to change the app's color scheme
+ */
+
+:root {
+  /** Primary Brand Colors **/
+  --ion-color-primary: #0284c7;
+  --ion-color-primary-rgb: 2, 132, 199;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0369a1;
+  --ion-color-primary-tint: #0ea5e9;
+
+  /** Secondary Colors **/
+  --ion-color-secondary: #3b82f6;
+  --ion-color-secondary-rgb: 59, 130, 246;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #2563eb;
+  --ion-color-secondary-tint: #60a5fa;
+
+  /** Success Color **/
+  --ion-color-success: #10b981;
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #059669;
+  --ion-color-success-tint: #34d399;
+
+  /** Warning Color **/
+  --ion-color-warning: #f59e0b;
+  --ion-color-warning-rgb: 245, 158, 11;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #d97706;
+  --ion-color-warning-tint: #fbbf24;
+
+  /** Danger Color **/
+  --ion-color-danger: #ef4444;
+  --ion-color-danger-rgb: 239, 68, 68;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #dc2626;
+  --ion-color-danger-tint: #f87171;
+
+  /** Dark Colors **/
+  --ion-color-dark: #1f2937;
+  --ion-color-dark-rgb: 31, 41, 55;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #111827;
+  --ion-color-dark-tint: #374151;
+
+  /** Medium Colors **/
+  --ion-color-medium: #6b7280;
+  --ion-color-medium-rgb: 107, 114, 128;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #4b5563;
+  --ion-color-medium-tint: #9ca3af;
+
+  /** Light Colors **/
+  --ion-color-light: #f3f4f6;
+  --ion-color-light-rgb: 243, 244, 246;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #e5e7eb;
+  --ion-color-light-tint: #f9fafb;
+
+  /** Custom Financial Colors **/
+  --ion-color-income: #10b981;
+  --ion-color-income-rgb: 16, 185, 129;
+  --ion-color-income-contrast: #ffffff;
+  --ion-color-income-contrast-rgb: 255, 255, 255;
+  --ion-color-income-shade: #059669;
+  --ion-color-income-tint: #34d399;
+
+  --ion-color-expense: #ef4444;
+  --ion-color-expense-rgb: 239, 68, 68;
+  --ion-color-expense-contrast: #ffffff;
+  --ion-color-expense-contrast-rgb: 255, 255, 255;
+  --ion-color-expense-shade: #dc2626;
+  --ion-color-expense-tint: #f87171;
+
+  /** Background colors **/
+  --ion-background-color: #f9fafb;
+  --ion-background-color-rgb: 249, 250, 251;
+
+  --ion-text-color: #111827;
+  --ion-text-color-rgb: 17, 24, 39;
+
+  --ion-border-color: #e5e7eb;
+
+  /** Toolbar **/
+  --ion-toolbar-background: #ffffff;
+  --ion-toolbar-border-color: #e5e7eb;
+  --ion-toolbar-color: #1f2937;
+
+  /** Item **/
+  --ion-item-background: #ffffff;
+  --ion-item-border-color: #e5e7eb;
+
+  /** Card **/
+  --ion-card-background: #ffffff;
+}
+
+/* iOS Dark Mode */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #111827;
+    --ion-background-color-rgb: 17, 24, 39;
+
+    --ion-text-color: #f9fafb;
+    --ion-text-color-rgb: 249, 250, 251;
+
+    --ion-border-color: #374151;
+
+    --ion-toolbar-background: #1f2937;
+    --ion-toolbar-border-color: #374151;
+
+    --ion-item-background: #1f2937;
+    --ion-item-border-color: #374151;
+
+    --ion-card-background: #1f2937;
+  }
+} */
+
+/* Custom Ionic color classes */
+.ion-color-income {
+  --ion-color-base: var(--ion-color-income);
+  --ion-color-base-rgb: var(--ion-color-income-rgb);
+  --ion-color-contrast: var(--ion-color-income-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-income-contrast-rgb);
+  --ion-color-shade: var(--ion-color-income-shade);
+  --ion-color-tint: var(--ion-color-income-tint);
+}
+
+.ion-color-expense {
+  --ion-color-base: var(--ion-color-expense);
+  --ion-color-base-rgb: var(--ion-color-expense-rgb);
+  --ion-color-contrast: var(--ion-color-expense-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-expense-contrast-rgb);
+  --ion-color-shade: var(--ion-color-expense-shade);
+  --ion-color-tint: var(--ion-color-expense-tint);
+}

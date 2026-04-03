@@ -2,6 +2,20 @@
  * Dashboard page - Comprehensive financial overview
  */
 import { useState } from 'react';
+import {
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonSelect,
+  IonSelectOption,
+  IonText,
+  IonSpinner,
+  IonProgressBar,
+  IonGrid,
+  IonRow,
+  IonCol,
+} from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
 import { reportsAPI, DashboardData } from '@/services/reports';
 import { budgetsAPI } from '@/services/budgets';
@@ -26,13 +40,19 @@ export const DashboardPage = () => {
   });
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading dashboard...</div>;
+    return (
+      <div className="flex items-center justify-center py-12">
+        <IonSpinner />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
-        Error loading dashboard data
+      <div className="text-center py-12">
+        <IonText color="danger">
+          <p>Error loading dashboard data</p>
+        </IonText>
       </div>
     );
   }
@@ -42,215 +62,274 @@ export const DashboardPage = () => {
     : '0.0';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <select
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <IonSelect
           value={dateRange}
-          onChange={(e) => setDateRange(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+          onIonChange={(e) => setDateRange(e.detail.value)}
+          interface="popover"
         >
-          <option value="current_month">Current Month</option>
-          <option value="last_month">Last Month</option>
-          <option value="last_3_months">Last 3 Months</option>
-          <option value="current_year">Current Year</option>
-        </select>
+          <IonSelectOption value="current_month">Current Month</IonSelectOption>
+          <IonSelectOption value="last_month">Last Month</IonSelectOption>
+          <IonSelectOption value="last_3_months">Last 3 Months</IonSelectOption>
+          <IonSelectOption value="current_year">Current Year</IonSelectOption>
+        </IonSelect>
       </div>
 
       {/* Period Display */}
-      <div className="text-sm text-gray-600">
-        Period: {new Date(data?.overview.period_start || '').toLocaleDateString()} -{' '}
-        {new Date(data?.overview.period_end || '').toLocaleDateString()}
-      </div>
+      <IonText color="medium">
+        <p className="text-sm">
+          Period: {new Date(data?.overview.period_start || '').toLocaleDateString()} -{' '}
+          {new Date(data?.overview.period_end || '').toLocaleDateString()}
+        </p>
+      </IonText>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <h3 className="text-sm font-medium text-green-700">Total Income</h3>
-          <p className="text-3xl font-bold text-green-900 mt-2">
-            ${data?.overview.total_income.toFixed(2)}
-          </p>
-          <p className="text-xs text-green-600 mt-1">
-            Revenue for the period
-          </p>
-        </div>
+      <IonGrid className="ion-no-padding">
+        <IonRow>
+          <IonCol size="12" sizeMd="6" sizeLg="3">
+            <IonCard className="ion-no-margin" color="success" style={{ '--background': 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+              <IonCardContent>
+                <IonText color="light">
+                  <p className="text-xs font-medium opacity-90">Total Income</p>
+                  <h2 className="text-2xl font-bold mt-1">
+                    ${data?.overview.total_income.toFixed(2)}
+                  </h2>
+                  <p className="text-xs mt-1 opacity-80">Revenue for the period</p>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
 
-        <div className="card bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-          <h3 className="text-sm font-medium text-red-700">Total Expenses</h3>
-          <p className="text-3xl font-bold text-red-900 mt-2">
-            ${data?.overview.total_expenses.toFixed(2)}
-          </p>
-          <p className="text-xs text-red-600 mt-1">
-            Spending for the period
-          </p>
-        </div>
+          <IonCol size="12" sizeMd="6" sizeLg="3">
+            <IonCard className="ion-no-margin" color="danger" style={{ '--background': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
+              <IonCardContent>
+                <IonText color="light">
+                  <p className="text-xs font-medium opacity-90">Total Expenses</p>
+                  <h2 className="text-2xl font-bold mt-1">
+                    ${data?.overview.total_expenses.toFixed(2)}
+                  </h2>
+                  <p className="text-xs mt-1 opacity-80">Spending for the period</p>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
 
-        <div className={`card bg-gradient-to-br ${
-          (data?.overview.net_income || 0) >= 0
-            ? 'from-blue-50 to-blue-100 border-blue-200'
-            : 'from-orange-50 to-orange-100 border-orange-200'
-        }`}>
-          <h3 className={`text-sm font-medium ${
-            (data?.overview.net_income || 0) >= 0 ? 'text-blue-700' : 'text-orange-700'
-          }`}>
-            Net Income
-          </h3>
-          <p className={`text-3xl font-bold mt-2 ${
-            (data?.overview.net_income || 0) >= 0 ? 'text-blue-900' : 'text-orange-900'
-          }`}>
-            ${data?.overview.net_income.toFixed(2)}
-          </p>
-          <p className={`text-xs mt-1 ${
-            (data?.overview.net_income || 0) >= 0 ? 'text-blue-600' : 'text-orange-600'
-          }`}>
-            {(data?.overview.net_income || 0) >= 0 ? 'Surplus' : 'Deficit'}
-          </p>
-        </div>
+          <IonCol size="12" sizeMd="6" sizeLg="3">
+            <IonCard
+              className="ion-no-margin"
+              color={(data?.overview.net_income || 0) >= 0 ? 'primary' : 'warning'}
+              style={{
+                '--background': (data?.overview.net_income || 0) >= 0
+                  ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
+                  : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+              }}
+            >
+              <IonCardContent>
+                <IonText color="light">
+                  <p className="text-xs font-medium opacity-90">Net Income</p>
+                  <h2 className="text-2xl font-bold mt-1">
+                    ${data?.overview.net_income.toFixed(2)}
+                  </h2>
+                  <p className="text-xs mt-1 opacity-80">
+                    {(data?.overview.net_income || 0) >= 0 ? 'Surplus' : 'Deficit'}
+                  </p>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
 
-        <div className="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <h3 className="text-sm font-medium text-purple-700">Total Balance</h3>
-          <p className="text-3xl font-bold text-purple-900 mt-2">
-            ${data?.overview.total_balance.toFixed(2)}
-          </p>
-          <p className="text-xs text-purple-600 mt-1">
-            Across {data?.overview.total_accounts} accounts
-          </p>
-        </div>
-      </div>
+          <IonCol size="12" sizeMd="6" sizeLg="3">
+            <IonCard className="ion-no-margin" color="secondary" style={{ '--background': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}>
+              <IonCardContent>
+                <IonText color="light">
+                  <p className="text-xs font-medium opacity-90">Total Balance</p>
+                  <h2 className="text-2xl font-bold mt-1">
+                    ${data?.overview.total_balance.toFixed(2)}
+                  </h2>
+                  <p className="text-xs mt-1 opacity-80">
+                    Across {data?.overview.total_accounts} accounts
+                  </p>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
 
       {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card">
-          <h3 className="text-sm font-medium text-gray-700">Savings Rate</h3>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{savingsRate}%</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-primary-600 h-2 rounded-full"
-              style={{ width: `${Math.max(0, Math.min(100, parseFloat(savingsRate)))}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 className="text-sm font-medium text-gray-700">Budget Status</h3>
-          {budgetOverview && budgetOverview.total_budget > 0 ? (
-            <>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
-                {budgetOverview.percentage_used.toFixed(0)}%
-              </p>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full ${
-                    budgetOverview.percentage_used >= 100
-                      ? 'bg-red-600'
-                      : budgetOverview.percentage_used >= 90
-                      ? 'bg-orange-600'
-                      : 'bg-green-600'
-                  }`}
-                  style={{ width: `${Math.min(100, budgetOverview.percentage_used)}%` }}
+      <IonGrid className="ion-no-padding">
+        <IonRow>
+          <IonCol size="12" sizeMd="4">
+            <IonCard>
+              <IonCardContent>
+                <IonText>
+                  <p className="text-sm font-medium">Savings Rate</p>
+                  <h3 className="text-xl font-bold mt-1">{savingsRate}%</h3>
+                </IonText>
+                <IonProgressBar
+                  value={Math.max(0, Math.min(1, parseFloat(savingsRate) / 100))}
+                  color="primary"
+                  className="mt-2"
                 />
-              </div>
-              <p className="text-xs text-gray-600 mt-1">
-                ${budgetOverview.total_remaining.toFixed(2)} remaining
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-gray-500 mt-2">No budgets set</p>
-          )}
-        </div>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
 
-        <div className="card">
-          <h3 className="text-sm font-medium text-gray-700">Average Daily Spending</h3>
-          <p className="text-2xl font-bold text-gray-900 mt-2">
-            ${data?.overview.total_expenses && data?.overview.period_end && data?.overview.period_start ? (
-              data.overview.total_expenses /
-              Math.max(
-                1,
-                Math.ceil(
-                  (new Date(data.overview.period_end).getTime() -
-                    new Date(data.overview.period_start).getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )
-              )
-            ).toFixed(2) : '0.00'}
-          </p>
-        </div>
-      </div>
+          <IonCol size="12" sizeMd="4">
+            <IonCard>
+              <IonCardContent>
+                <IonText>
+                  <p className="text-sm font-medium">Budget Status</p>
+                </IonText>
+                {budgetOverview && budgetOverview.total_budget > 0 ? (
+                  <>
+                    <h3 className="text-xl font-bold mt-1">
+                      {budgetOverview.percentage_used.toFixed(0)}%
+                    </h3>
+                    <IonProgressBar
+                      value={Math.min(1, budgetOverview.percentage_used / 100)}
+                      color={
+                        budgetOverview.percentage_used >= 100
+                          ? 'danger'
+                          : budgetOverview.percentage_used >= 90
+                          ? 'warning'
+                          : 'success'
+                      }
+                      className="mt-2"
+                    />
+                    <IonText color="medium">
+                      <p className="text-xs mt-1">
+                        ${budgetOverview.total_remaining.toFixed(2)} remaining
+                      </p>
+                    </IonText>
+                  </>
+                ) : (
+                  <IonText color="medium">
+                    <p className="text-sm mt-2">No budgets set</p>
+                  </IonText>
+                )}
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Breakdown */}
-        <div className="card">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Spending by Category</h2>
+          <IonCol size="12" sizeMd="4">
+            <IonCard>
+              <IonCardContent>
+                <IonText>
+                  <p className="text-sm font-medium">Average Daily Spending</p>
+                  <h3 className="text-xl font-bold mt-1">
+                    ${data?.overview.total_expenses && data?.overview.period_end && data?.overview.period_start ? (
+                      data.overview.total_expenses /
+                      Math.max(
+                        1,
+                        Math.ceil(
+                          (new Date(data.overview.period_end).getTime() -
+                            new Date(data.overview.period_start).getTime()) /
+                            (1000 * 60 * 60 * 24)
+                        )
+                      )
+                    ).toFixed(2) : '0.00'}
+                  </h3>
+                </IonText>
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+
+      {/* Category Breakdown */}
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>Spending by Category</IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
           {data?.category_breakdown && data.category_breakdown.length > 0 ? (
             <div className="space-y-4">
               {data.category_breakdown.slice(0, 8).map((category) => (
                 <div key={category.category_name}>
                   <div className="flex justify-between items-center text-sm mb-1">
-                    <span className="font-medium text-gray-900">{category.category_name}</span>
-                    <span className="text-gray-600">
-                      ${category.amount.toFixed(2)} ({category.percentage.toFixed(1)}%)
-                    </span>
+                    <span className="font-medium">{category.category_name}</span>
+                    <IonText color="medium">
+                      <span className="text-sm">
+                        ${category.amount.toFixed(2)} ({category.percentage.toFixed(1)}%)
+                      </span>
+                    </IonText>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-primary-600 h-2.5 rounded-full transition-all"
-                      style={{ width: `${Math.min(category.percentage, 100)}%` }}
-                    />
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {category.transaction_count} transactions
-                  </div>
+                  <IonProgressBar
+                    value={Math.min(1, category.percentage / 100)}
+                    color="primary"
+                  />
+                  <IonText color="medium">
+                    <p className="text-xs mt-1">
+                      {category.transaction_count} transactions
+                    </p>
+                  </IonText>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8">
               <div className="text-4xl mb-2">📊</div>
-              <p>No spending data yet</p>
+              <IonText color="medium">
+                <p>No spending data yet</p>
+              </IonText>
             </div>
           )}
-        </div>
-      </div>
+        </IonCardContent>
+      </IonCard>
 
       {/* Monthly Trends */}
       {data?.monthly_trends && data.monthly_trends.length > 0 && (
-        <div className="card">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Monthly Trend</h2>
-          <div className="space-y-3">
-            {data.monthly_trends.map((trend) => (
-              <div key={trend.month} className="border-l-4 border-primary-500 pl-4 py-2">
-                <div className="font-semibold text-gray-900 mb-2">
-                  {new Date(trend.month + '-01').toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                  })}
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Monthly Trend</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <div className="space-y-3">
+              {data.monthly_trends.map((trend) => (
+                <div key={trend.month} className="border-l-4 border-primary pl-3 py-2">
+                  <div className="font-semibold mb-2">
+                    {new Date(trend.month + '-01').toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                    })}
+                  </div>
+                  <IonGrid className="ion-no-padding">
+                    <IonRow>
+                      <IonCol size="4">
+                        <IonText color="medium">
+                          <p className="text-xs">Income</p>
+                        </IonText>
+                        <IonText color="success">
+                          <p className="font-bold text-sm">${trend.income.toFixed(2)}</p>
+                        </IonText>
+                      </IonCol>
+                      <IonCol size="4">
+                        <IonText color="medium">
+                          <p className="text-xs">Expenses</p>
+                        </IonText>
+                        <IonText color="danger">
+                          <p className="font-bold text-sm">${trend.expenses.toFixed(2)}</p>
+                        </IonText>
+                      </IonCol>
+                      <IonCol size="4">
+                        <IonText color="medium">
+                          <p className="text-xs">Net</p>
+                        </IonText>
+                        <IonText color={trend.net >= 0 ? 'primary' : 'warning'}>
+                          <p className="font-bold text-sm">${trend.net.toFixed(2)}</p>
+                        </IonText>
+                      </IonCol>
+                    </IonRow>
+                  </IonGrid>
                 </div>
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <div className="text-gray-600">Income</div>
-                    <div className="font-bold text-green-600">${trend.income.toFixed(2)}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-600">Expenses</div>
-                    <div className="font-bold text-red-600">${trend.expenses.toFixed(2)}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-600">Net</div>
-                    <div
-                      className={`font-bold ${
-                        trend.net >= 0 ? 'text-blue-600' : 'text-orange-600'
-                      }`}
-                    >
-                      ${trend.net.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </IonCardContent>
+        </IonCard>
       )}
     </div>
   );

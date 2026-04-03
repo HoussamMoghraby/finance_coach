@@ -2,7 +2,24 @@
  * Login page
  */
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonText,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+} from '@ionic/react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const LoginPage = () => {
@@ -19,6 +36,7 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
+      console.log('Attempting login with:', { email, password });
       await login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
@@ -29,76 +47,77 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            AI Personal Finance Coach
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account
-          </p>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar color="primary">
+          <IonTitle>Finance Coach</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding" fullscreen>
+        <div className="flex flex-col items-center justify-center min-h-full">
+          <IonCard className="w-full max-w-md">
+            <IonCardHeader>
+              <div className="text-center">
+                <IonCardTitle className="text-2xl font-bold">💰 AI Personal Finance Coach</IonCardTitle>
+                <IonCardSubtitle className="mt-2">Sign in to your account</IonCardSubtitle>
+              </div>
+            </IonCardHeader>
+            <IonCardContent>
+              <form onSubmit={handleSubmit}>
+                {error && (
+                  <div className="ion-padding rounded-md bg-red-50 mb-4">
+                    <IonText color="danger">
+                      <p className="text-sm">{error}</p>
+                    </IonText>
+                  </div>
+                )}
+
+                <IonItem className="mb-4">
+                  <IonLabel position="stacked">Email</IonLabel>
+                  <IonInput
+                    type="email"
+                    value={email}
+                    onIonInput={(e) => setEmail((e.target as HTMLIonInputElement).value as string)}
+                    required
+                    placeholder="Enter your email"
+                  />
+                </IonItem>
+
+                <IonItem className="mb-6">
+                  <IonLabel position="stacked">Password</IonLabel>
+                  <IonInput
+                    type="password"
+                    value={password}
+                    onIonInput={(e) => setPassword((e.target as HTMLIonInputElement).value as string)}
+                    required
+                    placeholder="Enter your password"
+                  />
+                </IonItem>
+
+                <IonButton
+                  expand="block"
+                  type="submit"
+                  disabled={loading}
+                  color="primary"
+                  className="mb-4"
+                >
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </IonButton>
+
+                <div className="text-center">
+                  <IonButton
+                    fill="clear"
+                    routerLink="/register"
+                    size="small"
+                  >
+                    Don't have an account? Register
+                  </IonButton>
+                </div>
+              </form>
+            </IonCardContent>
+          </IonCard>
         </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="input rounded-t-md rounded-b-none"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="input rounded-b-md rounded-t-none"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary w-full"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-
-          <div className="text-center">
-            <Link to="/register" className="text-primary-600 hover:text-primary-700">
-              Don't have an account? Register
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+      </IonContent>
+    </IonPage>
   );
 };

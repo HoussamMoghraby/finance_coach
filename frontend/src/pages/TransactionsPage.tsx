@@ -2,6 +2,32 @@
  * Transactions page - manage income, expenses, and transfers
  */
 import { useState, useMemo } from 'react';
+import {
+  IonCard,
+  IonCardContent,
+  IonButton,
+  IonSpinner,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonBadge,
+  IonButtons,
+  IonIcon,
+  IonList,
+  IonTextarea,
+  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+} from '@ionic/react';
+import { closeOutline, arrowForwardOutline } from 'ionicons/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionsAPI, Transaction, TransactionCreate, TransactionFilters } from '@/services/transactions';
 import { accountsAPI } from '@/services/accounts';
@@ -167,375 +193,383 @@ export const TransactionsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Loading transactions...</div>
+        <IonSpinner />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">Error loading transactions. Please try again.</p>
-      </div>
+      <IonCard color="danger">
+        <IonCardContent>
+          <IonText color="light">
+            <p>Error loading transactions. Please try again.</p>
+          </IonText>
+        </IonCardContent>
+      </IonCard>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600 mt-1">Track your income and expenses</p>
+          <h1 className="text-2xl font-bold">Transactions</h1>
+          <IonText color="medium">
+            <p className="text-sm">Track your income and expenses</p>
+          </IonText>
         </div>
-        <button onClick={handleOpenCreate} className="btn btn-primary">
-          + Add Transaction
-        </button>
+        <IonButton onClick={handleOpenCreate}>+ Add Transaction</IonButton>
       </div>
 
       {/* Filters */}
-      <div className="card">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Account</label>
-            <select
-              value={filters.account_id || ''}
-              onChange={(e) =>
-                setFilters({ ...filters, account_id: e.target.value ? parseInt(e.target.value) : undefined })
-              }
-              className="input"
-            >
-              <option value="">All Accounts</option>
-              {accounts?.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <IonCard>
+        <IonCardContent>
+          <IonGrid className="ion-no-padding">
+            <IonRow>
+              <IonCol size="12" sizeMd="6" sizeLg="3">
+                <IonItem>
+                  <IonLabel position="stacked">Account</IonLabel>
+                  <IonSelect
+                    value={filters.account_id || ''}
+                    onIonChange={(e) =>
+                      setFilters({ ...filters, account_id: e.detail.value ? parseInt(e.detail.value) : undefined })
+                    }
+                  >
+                    <IonSelectOption value="">All Accounts</IonSelectOption>
+                    {accounts?.map((account) => (
+                      <IonSelectOption key={account.id} value={account.id}>
+                        {account.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select
-              value={filters.category_id || ''}
-              onChange={(e) =>
-                setFilters({ ...filters, category_id: e.target.value ? parseInt(e.target.value) : undefined })
-              }
-              className="input"
-            >
-              <option value="">All Categories</option>
-              {categories?.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              <IonCol size="12" sizeMd="6" sizeLg="3">
+                <IonItem>
+                  <IonLabel position="stacked">Category</IonLabel>
+                  <IonSelect
+                    value={filters.category_id || ''}
+                    onIonChange={(e) =>
+                      setFilters({ ...filters, category_id: e.detail.value ? parseInt(e.detail.value) : undefined })
+                    }
+                  >
+                    <IonSelectOption value="">All Categories</IonSelectOption>
+                    {categories?.map((category) => (
+                      <IonSelectOption key={category.id} value={category.id}>
+                        {category.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select
-              value={filters.type || ''}
-              onChange={(e) => setFilters({ ...filters, type: e.target.value || undefined })}
-              className="input"
-            >
-              <option value="">All Types</option>
-              {TRANSACTION_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              <IonCol size="12" sizeMd="6" sizeLg="3">
+                <IonItem>
+                  <IonLabel position="stacked">Type</IonLabel>
+                  <IonSelect
+                    value={filters.type || ''}
+                    onIonChange={(e) => setFilters({ ...filters, type: e.detail.value || undefined })}
+                  >
+                    <IonSelectOption value="">All Types</IonSelectOption>
+                    {TRANSACTION_TYPES.map((type) => (
+                      <IonSelectOption key={type.value} value={type.value}>
+                        {type.label}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
 
-          <div className="flex items-end">
-            <button
-              onClick={() => setFilters({ limit: 100 })}
-              className="btn btn-secondary w-full"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      </div>
+              <IonCol size="12" sizeMd="6" sizeLg="3" className="flex items-end">
+                <IonButton
+                  fill="outline"
+                  expand="block"
+                  onClick={() => setFilters({ limit: 100 })}
+                  className="w-full"
+                >
+                  Clear Filters
+                </IonButton>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </IonCardContent>
+      </IonCard>
 
       {/* Transactions List */}
       {transactions && transactions.length > 0 ? (
-        <div className="card p-0 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Account
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {transactions.map((transaction) => {
-                  const typeStyle = getTypeStyle(transaction.type);
-                  return (
-                    <tr key={transaction.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatUTCDate(transaction.transaction_date)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        <div className="font-medium">{transaction.description}</div>
-                        {transaction.notes && (
-                          <div className="text-xs text-gray-500 mt-1">{transaction.notes}</div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {getCategoryName(transaction.category_id)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {transaction.type === 'transfer' && transaction.to_account_id ? (
+        <IonList>
+          {transactions.map((transaction) => {
+            const typeStyle = getTypeStyle(transaction.type);
+            const typeColor =
+              transaction.type === 'income'
+                ? 'success'
+                : transaction.type === 'expense'
+                ? 'danger'
+                : 'primary';
+
+            return (
+              <IonCard key={transaction.id}>
+                <IonCardContent>
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <IonBadge color={typeColor}>{typeStyle.label}</IonBadge>
+                        <IonText color="medium">
+                          <span className="text-xs">{formatUTCDate(transaction.transaction_date)}</span>
+                        </IonText>
+                      </div>
+                      <h3 className="font-semibold text-base">{transaction.description}</h3>
+                      {transaction.notes && (
+                        <IonText color="medium">
+                          <p className="text-xs mt-1">{transaction.notes}</p>
+                        </IonText>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <IonText color={typeColor}>
+                        <p className="font-bold text-lg">{formatAmount(transaction.amount, transaction.type)}</p>
+                      </IonText>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t">
+                    <div className="text-sm">
+                      {transaction.type === 'transfer' && transaction.to_account_id ? (
+                        <IonText color="medium">
+                          <div className="flex items-center space-x-1">
+                            <span>{getAccountName(transaction.account_id)}</span>
+                            <IonIcon icon={arrowForwardOutline} className="text-xs" />
+                            <span>{getAccountName(transaction.to_account_id)}</span>
+                          </div>
+                        </IonText>
+                      ) : (
+                        <IonText color="medium">
                           <div>
                             <div className="font-medium">{getAccountName(transaction.account_id)}</div>
-                            <div className="text-xs text-gray-500">→ {getAccountName(transaction.to_account_id)}</div>
+                            <div className="text-xs">{getCategoryName(transaction.category_id)}</div>
                           </div>
-                        ) : (
-                          getAccountName(transaction.account_id)
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs rounded-full ${typeStyle.bg} ${typeStyle.color}`}>
-                          {typeStyle.label}
-                        </span>
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${typeStyle.color}`}>
-                        {formatAmount(transaction.amount, transaction.type)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
-                        <button
-                          onClick={() => handleOpenEdit(transaction)}
-                          className="text-primary-600 hover:text-primary-900"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(transaction.id)}
-                          className="text-red-600 hover:text-red-900"
-                          disabled={deleteMutation.isPending}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                        </IonText>
+                      )}
+                    </div>
+                    <div className="flex space-x-2">
+                      <IonButton
+                        size="small"
+                        fill="clear"
+                        onClick={() => handleOpenEdit(transaction)}
+                      >
+                        Edit
+                      </IonButton>
+                      <IonButton
+                        size="small"
+                        fill="clear"
+                        color="danger"
+                        onClick={() => handleDelete(transaction.id)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        Delete
+                      </IonButton>
+                    </div>
+                  </div>
+                </IonCardContent>
+              </IonCard>
+            );
+          })}
+        </IonList>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-          <span className="text-6xl">💰</span>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No transactions yet</h3>
-          <p className="mt-2 text-gray-500">Start tracking your finances by adding your first transaction</p>
-          <button onClick={handleOpenCreate} className="btn btn-primary mt-4">
-            Add Transaction
-          </button>
+        <div className="text-center py-12">
+          <IonCard>
+            <IonCardContent>
+              <span className="text-6xl">💰</span>
+              <h3 className="mt-4 text-lg font-medium">No transactions yet</h3>
+              <IonText color="medium">
+                <p className="mt-2">Start tracking your finances by adding your first transaction</p>
+              </IonText>
+              <IonButton onClick={handleOpenCreate} className="mt-4">
+                Add Transaction
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
         </div>
       )}
 
       {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              {editingTransaction ? 'Edit Transaction' : 'New Transaction'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-                  Type *
-                </label>
-                <select
-                  id="type"
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any, category_id: undefined, to_account_id: undefined })}
-                  className="input mt-1"
-                  required
-                >
-                  {TRANSACTION_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      <IonModal
+        isOpen={isModalOpen}
+        onDidDismiss={() => {
+          setIsModalOpen(false);
+          setEditingTransaction(null);
+          resetForm();
+        }}
+      >
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>{editingTransaction ? 'Edit Transaction' : 'New Transaction'}</IonTitle>
+            <IonButtons slot="end">
+              <IonButton
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingTransaction(null);
+                  resetForm();
+                }}
+              >
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <form onSubmit={handleSubmit}>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Type *</IonLabel>
+              <IonSelect
+                value={formData.type}
+                onIonChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    type: e.detail.value as any,
+                    category_id: undefined,
+                    to_account_id: undefined,
+                  })
+                }
+              >
+                {TRANSACTION_TYPES.map((type) => (
+                  <IonSelectOption key={type.value} value={type.value}>
+                    {type.label}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-              <div>
-                <label htmlFor="account_id" className="block text-sm font-medium text-gray-700">
-                  {formData.type === 'transfer' ? 'From Account (Source) *' : 'Account *'}
-                </label>
-                <select
-                  id="account_id"
-                  value={formData.account_id}
-                  onChange={(e) => setFormData({ ...formData, account_id: parseInt(e.target.value) })}
-                  className="input mt-1"
-                  required
-                >
-                  <option value={0}>Select account</option>
-                  {accounts?.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">
+                {formData.type === 'transfer' ? 'From Account (Source) *' : 'Account *'}
+              </IonLabel>
+              <IonSelect
+                value={formData.account_id}
+                onIonChange={(e) => setFormData({ ...formData, account_id: parseInt(e.detail.value) })}
+              >
+                <IonSelectOption value={0}>Select account</IonSelectOption>
+                {accounts?.map((account) => (
+                  <IonSelectOption key={account.id} value={account.id}>
+                    {account.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-              {formData.type === 'transfer' && (
-                <div>
-                  <label htmlFor="to_account_id" className="block text-sm font-medium text-gray-700">
-                    To Account (Target) *
-                  </label>
-                  <select
-                    id="to_account_id"
-                    value={formData.to_account_id || 0}
-                    onChange={(e) => setFormData({ ...formData, to_account_id: parseInt(e.target.value) })}
-                    className="input mt-1"
-                    required={formData.type === 'transfer'}
-                  >
-                    <option value={0}>Select target account</option>
-                    {accounts?.filter(acc => acc.id !== formData.account_id).map((account) => (
-                      <option key={account.id} value={account.id}>
+            {formData.type === 'transfer' && (
+              <IonItem className="mb-4">
+                <IonLabel position="stacked">To Account (Target) *</IonLabel>
+                <IonSelect
+                  value={formData.to_account_id || 0}
+                  onIonChange={(e) => setFormData({ ...formData, to_account_id: parseInt(e.detail.value) })}
+                >
+                  <IonSelectOption value={0}>Select target account</IonSelectOption>
+                  {accounts
+                    ?.filter((acc) => acc.id !== formData.account_id)
+                    .map((account) => (
+                      <IonSelectOption key={account.id} value={account.id}>
                         {account.name}
-                      </option>
+                      </IonSelectOption>
                     ))}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Internal transfer: money will be moved from source to target account
-                  </p>
-                </div>
-              )}
+                </IonSelect>
+                <IonText color="medium">
+                  <p className="text-xs mt-1">Internal transfer: money will be moved from source to target account</p>
+                </IonText>
+              </IonItem>
+            )}
 
-              {formData.type !== 'transfer' && (
-                <div>
-                  <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
-                    Category
-                  </label>
-                  <select
-                    id="category_id"
-                    value={formData.category_id || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category_id: e.target.value ? parseInt(e.target.value) : undefined })
-                    }
-                    className="input mt-1"
-                  >
-                    <option value="">Uncategorized</option>
-                    {filteredCategories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                  Amount *
-                </label>
-                <input
-                  type="number"
-                  id="amount"
-                  value={formData.amount || ''}
-                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                  className="input mt-1"
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0.01"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                  Description *
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="input mt-1"
-                  placeholder="e.g., Grocery shopping"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="transaction_date" className="block text-sm font-medium text-gray-700">
-                  Date *
-                </label>
-                <input
-                  type="date"
-                  id="transaction_date"
-                  value={formData.transaction_date}
-                  onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
-                  className="input mt-1"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                  Notes
-                </label>
-                <textarea
-                  id="notes"
-                  value={formData.notes || ''}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="input mt-1"
-                  rows={3}
-                  placeholder="Additional details (optional)"
-                />
-              </div>
-
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setEditingTransaction(null);
-                    resetForm();
-                  }}
-                  className="btn btn-secondary flex-1"
+            {formData.type !== 'transfer' && (
+              <IonItem className="mb-4">
+                <IonLabel position="stacked">Category</IonLabel>
+                <IonSelect
+                  value={formData.category_id || ''}
+                  onIonChange={(e) =>
+                    setFormData({ ...formData, category_id: e.detail.value ? parseInt(e.detail.value) : undefined })
+                  }
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary flex-1"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {editingTransaction ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  <IonSelectOption value="">Uncategorized</IonSelectOption>
+                  {filteredCategories.map((category) => (
+                    <IonSelectOption key={category.id} value={category.id}>
+                      {category.name}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonItem>
+            )}
+
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Amount *</IonLabel>
+              <IonInput
+                type="number"
+                value={formData.amount || ''}
+                onIonInput={(e) => setFormData({ ...formData, amount: parseFloat((e.target as HTMLIonInputElement).value as string) })}
+                placeholder="0.00"
+                step="0.01"
+                min="0.01"
+                required
+              />
+            </IonItem>
+
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Description *</IonLabel>
+              <IonInput
+                type="text"
+                value={formData.description}
+                onIonInput={(e) => setFormData({ ...formData, description: (e.target as HTMLIonInputElement).value as string })}
+                placeholder="e.g., Grocery shopping"
+                required
+              />
+            </IonItem>
+
+            <IonItem className="mb-4">
+              <IonLabel position="stacked">Date *</IonLabel>
+              <IonInput
+                type="date"
+                value={formData.transaction_date}
+                onIonInput={(e) => setFormData({ ...formData, transaction_date: (e.target as HTMLIonInputElement).value as string })}
+                required
+              />
+            </IonItem>
+
+            <IonItem className="mb-6">
+              <IonLabel position="stacked">Notes</IonLabel>
+              <IonTextarea
+                value={formData.notes || ''}
+                onIonInput={(e) => setFormData({ ...formData, notes: (e.target as HTMLIonTextareaElement).value as string })}
+                rows={3}
+                placeholder="Additional details (optional)"
+              />
+            </IonItem>
+
+            <div className="flex space-x-3">
+              <IonButton
+                fill="outline"
+                expand="block"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingTransaction(null);
+                  resetForm();
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </IonButton>
+              <IonButton
+                type="submit"
+                expand="block"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="flex-1"
+              >
+                {editingTransaction ? 'Update' : 'Create'}
+              </IonButton>
+            </div>
+          </form>
+        </IonContent>
+      </IonModal>
     </div>
   );
 };
