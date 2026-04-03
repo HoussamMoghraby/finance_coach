@@ -39,8 +39,6 @@ class TransactionRepository:
                 query = query.filter(Transaction.account_id == filters.account_id)
             if filters.category_id:
                 query = query.filter(Transaction.category_id == filters.category_id)
-            if filters.merchant_id:
-                query = query.filter(Transaction.merchant_id == filters.merchant_id)
             if filters.type:
                 query = query.filter(Transaction.type == filters.type)
             if filters.min_amount is not None:

@@ -11,13 +11,6 @@ export interface CategoryBreakdown {
   percentage: number;
 }
 
-export interface MerchantSummary {
-  merchant_id: number | null;
-  merchant_name: string;
-  amount: number;
-  transaction_count: number;
-}
-
 export interface MonthlyTrend {
   month: string;
   income: number;
@@ -38,12 +31,10 @@ export interface FinancialOverview {
 export interface DashboardData {
   overview: FinancialOverview;
   category_breakdown: CategoryBreakdown[];
-  top_merchants: MerchantSummary[];
   monthly_trends: MonthlyTrend[];
 }
 
 export interface RecurringTransactionCandidate {
-  merchant_name: string | null;
   category_name: string | null;
   average_amount: number;
   frequency_days: number;
@@ -74,18 +65,6 @@ export const reportsAPI = {
     if (startDate) params.start_date = startDate;
     if (endDate) params.end_date = endDate;
     const response = await api.get('/reports/category-breakdown', { params });
-    return response.data;
-  },
-
-  getTopMerchants: async (
-    limit: number = 10,
-    startDate?: string,
-    endDate?: string
-  ): Promise<MerchantSummary[]> => {
-    const params: any = { limit };
-    if (startDate) params.start_date = startDate;
-    if (endDate) params.end_date = endDate;
-    const response = await api.get('/reports/top-merchants', { params });
     return response.data;
   },
 

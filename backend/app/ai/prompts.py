@@ -37,14 +37,11 @@ Net: ${net}
 Category Breakdown:
 {category_breakdown}
 
-Top Merchants:
-{top_merchants}
-
 Budget Status: {budget_status}
 
 Provide a helpful 4-5 sentence summary highlighting:
 1. Overall spending patterns
-2. Notable categories or merchants
+2. Notable categories
 3. Budget performance
 4. One actionable suggestion"""
 
@@ -59,9 +56,6 @@ Savings Rate: {savings_rate}%
 
 Category Breakdown:
 {category_breakdown}
-
-Top Merchants:
-{top_merchants}
 
 Budget Status: {budget_status}
 
@@ -107,7 +101,6 @@ CATEGORIZATION_SUGGESTION_TEMPLATE = """Suggest an appropriate category for the 
 
 Description: {description}
 Amount: ${amount}
-Merchant: {merchant}
 
 Available categories:
 {categories}

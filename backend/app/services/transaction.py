@@ -56,7 +56,6 @@ class TransactionService:
             account_id=transaction_data.account_id,
             to_account_id=transaction_data.to_account_id,
             category_id=transaction_data.category_id,
-            merchant_id=transaction_data.merchant_id,
             type=transaction_data.type,
             amount=transaction_data.amount,
             currency=transaction_data.currency,

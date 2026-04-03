@@ -8,14 +8,12 @@ from sqlalchemy.orm import Session
 
 from app.models.account import Account
 from app.models.category import Category
-from app.models.merchant import Merchant
 from app.models.transaction import Transaction
 from app.repositories.transaction import TransactionRepository
 from app.schemas.report import (
     CategoryBreakdown,
     DashboardData,
     FinancialOverview,
-    MerchantSummary,
     MonthlyTrend,
     RecurringTransactionCandidate,
 )
@@ -118,49 +116,6 @@ class ReportService:
         breakdown.sort(key=lambda x: x.amount, reverse=True)
         return breakdown
     
-    def get_top_merchants(
-        self,
-        user_id: int,
-        limit: int = 10,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-    ) -> List[MerchantSummary]:
-        """Get top merchants by spending"""
-        if not start_date:
-            start_date = date.today().replace(day=1)
-        if not end_date:
-            end_date = date.today()
-        
-        results = (
-            self.db.query(
-                Transaction.merchant_id,
-                Merchant.name.label("merchant_name"),
-                func.sum(Transaction.amount).label("total_amount"),
-                func.count(Transaction.id).label("count"),
-            )
-            .outerjoin(Merchant, Transaction.merchant_id == Merchant.id)
-            .filter(
-                Transaction.user_id == user_id,
-                Transaction.type == "expense",
-                Transaction.transaction_date >= start_date,
-                Transaction.transaction_date <= end_date,
-            )
-            .group_by(Transaction.merchant_id, Merchant.name)
-            .order_by(func.sum(Transaction.amount).desc())
-            .limit(limit)
-            .all()
-        )
-        
-        return [
-            MerchantSummary(
-                merchant_id=r.merchant_id,
-                merchant_name=r.merchant_name or "Unknown",
-                amount=r.total_amount,
-                transaction_count=r.count,
-            )
-            for r in results
-        ]
-    
     def get_monthly_trends(
         self,
         user_id: int,
@@ -225,13 +180,11 @@ class ReportService:
         """Get complete dashboard data"""
         overview = self.get_financial_overview(user_id, start_date, end_date)
         category_breakdown = self.get_category_breakdown(user_id, "expense", start_date, end_date)
-        top_merchants = self.get_top_merchants(user_id, 10, start_date, end_date)
         monthly_trends = self.get_monthly_trends(user_id, 6)
         
         return DashboardData(
             overview=overview,
             category_breakdown=category_breakdown,
-            top_merchants=top_merchants,
             monthly_trends=monthly_trends,
         )
     
@@ -253,21 +206,21 @@ class ReportService:
                 Transaction.type == "expense",
                 Transaction.transaction_date >= start_date,
             )
-            .order_by(Transaction.merchant_id, Transaction.amount, Transaction.transaction_date)
+            .order_by(Transaction.category_id, Transaction.amount, Transaction.transaction_date)
             .all()
         )
         
-        # Group transactions by merchant
-        merchant_groups = {}
+        # Group transactions by category
+        category_groups = {}
         for txn in transactions:
-            key = (txn.merchant_id, txn.category_id)
-            if key not in merchant_groups:
-                merchant_groups[key] = []
-            merchant_groups[key].append(txn)
+            key = txn.category_id
+            if key not in category_groups:
+                category_groups[key] = []
+            category_groups[key].append(txn)
         
         candidates = []
         
-        for (merchant_id, category_id), txns in merchant_groups.items():
+        for category_id, txns in category_groups.items():
             if len(txns) < min_occurrences:
                 continue
             
@@ -285,12 +238,7 @@ class ReportService:
                 std_dev = variance ** 0.5
                 confidence = max(0, min(1, 1 - (std_dev / avg_interval)))
                 
-                # Get merchant and category names
-                merchant_name = None
-                if merchant_id:
-                    merchant = self.db.query(Merchant).get(merchant_id)
-                    merchant_name = merchant.name if merchant else None
-                
+                # Get category name
                 category_name = None
                 if category_id:
                     category = self.db.query(Category).get(category_id)
@@ -301,7 +249,6 @@ class ReportService:
                 
                 candidates.append(
                     RecurringTransactionCandidate(
-                        merchant_name=merchant_name,
                         category_name=category_name,
                         average_amount=round(avg_amount, 2),
                         frequency_days=int(avg_interval),

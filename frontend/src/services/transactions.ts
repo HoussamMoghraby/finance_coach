@@ -36,7 +36,6 @@ export interface TransactionCreate {
 export interface TransactionFilters {
   account_id?: number;
   category_id?: number;
-  merchant_id?: number;
   type?: string;
   skip?: number;
   limit?: number;

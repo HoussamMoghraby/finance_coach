@@ -3,9 +3,9 @@
  */
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { reportsAPI, CategoryBreakdown, MerchantSummary, RecurringTransactionCandidate } from '@/services/reports';
+import { reportsAPI, CategoryBreakdown, RecurringTransactionCandidate } from '@/services/reports';
 
-type ReportView = 'overview' | 'categories' | 'merchants' | 'trends' | 'recurring';
+type ReportView = 'overview' | 'categories' | 'trends' | 'recurring';
 
 export const ReportsPage = () => {
   const [period, setPeriod] = useState('current_month');
@@ -61,11 +61,6 @@ export const ReportsPage = () => {
     queryFn: () => reportsAPI.getCategoryBreakdown('expense', startDate, endDate),
   });
 
-  const { data: merchants, isLoading: merchantsLoading } = useQuery<MerchantSummary[]>({
-    queryKey: ['top-merchants', startDate, endDate],
-    queryFn: () => reportsAPI.getTopMerchants(15, startDate, endDate),
-  });
-
   const { data: trends, isLoading: trendsLoading } = useQuery({
     queryKey: ['monthly-trends'],
     queryFn: () => reportsAPI.getMonthlyTrend(12),
@@ -76,7 +71,7 @@ export const ReportsPage = () => {
     queryFn: () => reportsAPI.detectRecurring(),
   });
 
-  const isLoading = overviewLoading || categoriesLoading || merchantsLoading || trendsLoading || recurringLoading;
+  const isLoading = overviewLoading || categoriesLoading || trendsLoading || recurringLoading;
 
   const savingsRate = overview?.total_income
     ? ((overview.net_income / overview.total_income) * 100).toFixed(1)
@@ -115,7 +110,6 @@ export const ReportsPage = () => {
           {[
             { id: 'overview', label: 'Overview' },
             { id: 'categories', label: 'Categories' },
-            { id: 'merchants', label: 'Merchants' },
             { id: 'trends', label: 'Trends' },
             { id: 'recurring', label: 'Recurring' },
           ].map((view) => (
@@ -215,19 +209,9 @@ export const ReportsPage = () => {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-sm font-medium text-gray-700">Top Merchant</h3>
-                  {merchants && merchants.length > 0 ? (
-                    <>
-                      <p className="text-xl font-bold text-gray-900 mt-2">
-                        {merchants[0].merchant_name}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        ${merchants[0].amount.toFixed(2)} ({merchants[0].transaction_count} transactions)
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-gray-500 mt-2">No data</p>
-                  )}
+                  <h3 className="text-sm font-medium text-gray-700">Savings Rate</h3>
+                  <p className="text-xl font-bold text-gray-900 mt-2">{savingsRate}%</p>
+                  <p className="text-sm text-gray-600">Of income saved</p>
                 </div>
               </div>
             </div>
@@ -264,70 +248,6 @@ export const ReportsPage = () => {
                 <div className="text-center py-12 text-gray-500">
                   <div className="text-5xl mb-3">📊</div>
                   <p>No category data available for this period</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Merchants View */}
-          {activeView === 'merchants' && (
-            <div className="card">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Top Merchants</h2>
-              {merchants && merchants.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Rank
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Merchant
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Transactions
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Total Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Avg Transaction
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {merchants.map((merchant, index) => (
-                        <tr key={merchant.merchant_name} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="w-8 h-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold text-sm">
-                              {index + 1}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{merchant.merchant_name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{merchant.transaction_count}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-semibold text-gray-900">
-                              ${merchant.amount.toFixed(2)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600">
-                              ${(merchant.amount / merchant.transaction_count).toFixed(2)}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <div className="text-5xl mb-3">🏪</div>
-                  <p>No merchant data available for this period</p>
                 </div>
               )}
             </div>
@@ -403,7 +323,7 @@ export const ReportsPage = () => {
             <div className="card">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Detected Recurring Patterns</h2>
               <p className="text-sm text-gray-600 mb-6">
-                Transactions that appear to follow a recurring pattern based on merchant and amount.
+                Transactions that appear to follow a recurring pattern based on category and amount.
               </p>
               {recurring && recurring.length > 0 ? (
                 <div className="space-y-4">
@@ -412,7 +332,7 @@ export const ReportsPage = () => {
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <div className="font-semibold text-lg text-gray-900">
-                            {pattern.merchant_name}
+                            {pattern.category_name || 'Uncategorized'}
                           </div>
                           <div className="text-sm text-gray-600">
                             ~${pattern.average_amount.toFixed(2)} • Every {pattern.frequency_days} days
@@ -428,7 +348,8 @@ export const ReportsPage = () => {
                         </div>
                       </div>
                       <div className="text-sm text-gray-700">
-                        <span className="font-medium">Category:</span> {pattern.category_name}
+                        <span className="font-medium">Next Expected:</span>{' '}
+                        {new Date(pattern.next_expected_date).toLocaleDateString()}
                       </div>
                     </div>
                   ))}

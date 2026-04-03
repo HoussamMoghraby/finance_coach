@@ -51,7 +51,6 @@ class RecurringTransactionService:
         """Create a new recurring transaction"""
         return self.repo.create(
             user_id=user_id,
-            merchant_id=recurring_data.merchant_id,
             category_id=recurring_data.category_id,
             description=recurring_data.description,
             expected_amount=recurring_data.expected_amount,
@@ -134,7 +133,6 @@ class RecurringTransactionService:
             
             detection = RecurringTransactionDetection(
                 description=description,
-                merchant_id=txns[0].merchant_id,
                 category_id=txns[0].category_id,
                 expected_amount=expected_amount,
                 frequency=frequency,

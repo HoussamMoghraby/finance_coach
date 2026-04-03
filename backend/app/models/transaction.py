@@ -18,7 +18,6 @@ class Transaction(Base):
     account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     to_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=True, index=True)  # For internal transfers
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True, index=True)
-    merchant_id = Column(Integer, ForeignKey("merchants.id"), nullable=True, index=True)
     type = Column(String, nullable=False, index=True)  # income, expense, transfer
     amount = Column(Float, nullable=False)
     currency = Column(String, default="USD", nullable=False)
@@ -33,4 +32,3 @@ class Transaction(Base):
     account = relationship("Account", foreign_keys=[account_id], back_populates="transactions")
     to_account = relationship("Account", foreign_keys=[to_account_id], back_populates="incoming_transfers")
     category = relationship("Category", back_populates="transactions")
-    merchant = relationship("Merchant", back_populates="transactions")

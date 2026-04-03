@@ -15,7 +15,6 @@ class RecurringTransaction(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    merchant_id = Column(Integer, ForeignKey("merchants.id"), nullable=True, index=True)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True, index=True)
     description = Column(String, nullable=False)
     expected_amount = Column(Float, nullable=False)
@@ -29,5 +28,4 @@ class RecurringTransaction(Base):
     
     # Relationships
     user = relationship("User", backref="recurring_transactions")
-    merchant = relationship("Merchant", backref="recurring_transactions")
     category = relationship("Category", backref="recurring_transactions")

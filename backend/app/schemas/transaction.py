@@ -11,7 +11,6 @@ class TransactionBase(BaseModel):
     account_id: int
     to_account_id: Optional[int] = None  # For internal transfers
     category_id: Optional[int] = None
-    merchant_id: Optional[int] = None
     type: str = Field(..., description="Transaction type: income, expense, transfer")
     amount: float = Field(..., gt=0)
     currency: str = Field(default="USD", max_length=3)
@@ -30,7 +29,6 @@ class TransactionUpdate(BaseModel):
     account_id: Optional[int] = None
     to_account_id: Optional[int] = None
     category_id: Optional[int] = None
-    merchant_id: Optional[int] = None
     type: Optional[str] = None
     amount: Optional[float] = Field(None, gt=0)
     currency: Optional[str] = Field(None, max_length=3)
@@ -59,7 +57,6 @@ class TransactionFilter(BaseModel):
     """Schema for filtering transactions"""
     account_id: Optional[int] = None
     category_id: Optional[int] = None
-    merchant_id: Optional[int] = None
     type: Optional[str] = None
     min_amount: Optional[float] = None
     max_amount: Optional[float] = None

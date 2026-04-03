@@ -6,7 +6,6 @@ import api from './api';
 export interface RecurringTransaction {
   id: number;
   user_id: number;
-  merchant_id: number | null;
   category_id: number | null;
   description: string;
   expected_amount: number;
@@ -20,7 +19,6 @@ export interface RecurringTransaction {
 }
 
 export interface RecurringTransactionCreate {
-  merchant_id?: number | null;
   category_id?: number | null;
   description: string;
   expected_amount: number;
@@ -31,7 +29,6 @@ export interface RecurringTransactionCreate {
 }
 
 export interface RecurringTransactionUpdate {
-  merchant_id?: number | null;
   category_id?: number | null;
   description?: string;
   expected_amount?: number;
@@ -43,7 +40,6 @@ export interface RecurringTransactionUpdate {
 
 export interface RecurringTransactionDetection {
   description: string;
-  merchant_id: number | null;
   category_id: number | null;
   expected_amount: number;
   frequency: string;

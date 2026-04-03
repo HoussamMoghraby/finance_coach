@@ -239,41 +239,6 @@ export const DashboardPage = () => {
             </div>
           )}
         </div>
-
-        {/* Top Merchants */}
-        <div className="card">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Top Merchants</h2>
-          {data?.top_merchants && data.top_merchants.length > 0 ? (
-            <div className="space-y-3">
-              {data.top_merchants.slice(0, 8).map((merchant, index) => (
-                <div
-                  key={merchant.merchant_name}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{merchant.merchant_name}</div>
-                      <div className="text-xs text-gray-500">
-                        {merchant.transaction_count} transactions
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold text-gray-900">${merchant.amount.toFixed(2)}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <div className="text-4xl mb-2">🏪</div>
-              <p>No merchant data yet</p>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Monthly Trends */}

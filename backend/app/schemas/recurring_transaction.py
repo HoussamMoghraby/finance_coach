@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 
 class RecurringTransactionBase(BaseModel):
     """Base recurring transaction schema"""
-    merchant_id: Optional[int] = None
     category_id: Optional[int] = None
     description: str
     expected_amount: float
@@ -25,7 +24,6 @@ class RecurringTransactionCreate(RecurringTransactionBase):
 
 class RecurringTransactionUpdate(BaseModel):
     """Schema for updating a recurring transaction"""
-    merchant_id: Optional[int] = None
     category_id: Optional[int] = None
     description: Optional[str] = None
     expected_amount: Optional[float] = None
@@ -55,7 +53,7 @@ class RecurringTransaction(RecurringTransactionInDB):
 class RecurringTransactionDetection(BaseModel):
     """Schema for detected recurring transaction pattern"""
     description: str
-    merchant_id: Optional[int] = None
+
     category_id: Optional[int] = None
     expected_amount: float
     frequency: str

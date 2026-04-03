@@ -98,17 +98,10 @@ class AIService:
         category_breakdown = self.report_service.get_category_breakdown(
             user_id, "expense", start_date, end_date
         )
-        top_merchants = self.report_service.get_top_merchants(
-            user_id, 5, start_date, end_date
-        )
         budget_overview = self.budget_service.get_budget_overview(user_id, end_date)
         
         category_text = "\n".join(
             [f"- {c.category_name}: ${c.amount:.2f}" for c in category_breakdown[:8]]
-        )
-        
-        merchant_text = "\n".join(
-            [f"- {m.merchant_name}: ${m.amount:.2f}" for m in top_merchants[:5]]
         )
         
         budget_text = f"${budget_overview.total_spent:.2f} / ${budget_overview.total_budget:.2f} ({budget_overview.percentage_used:.1f}%)"
@@ -120,7 +113,6 @@ class AIService:
             total_expenses=f"{overview.total_expenses:.2f}",
             net=f"{overview.net_income:.2f}",
             category_breakdown=category_text or "No expenses recorded",
-            top_merchants=merchant_text or "No merchant data",
             budget_status=budget_text,
         )
         
@@ -140,9 +132,6 @@ class AIService:
         category_breakdown = self.report_service.get_category_breakdown(
             user_id, "expense", start_date, end_date
         )
-        top_merchants = self.report_service.get_top_merchants(
-            user_id, 10, start_date, end_date
-        )
         budget_overview = self.budget_service.get_budget_overview(user_id, end_date)
         
         savings_rate = (
@@ -154,10 +143,6 @@ class AIService:
         category_text = "\n".join(
             [f"- {c.category_name}: ${c.amount:.2f} ({c.percentage:.1f}%)" 
              for c in category_breakdown[:10]]
-        )
-        
-        merchant_text = "\n".join(
-            [f"- {m.merchant_name}: ${m.amount:.2f}" for m in top_merchants[:10]]
         )
         
         budget_text = f"Overall: ${budget_overview.total_spent:.2f} / ${budget_overview.total_budget:.2f} ({budget_overview.percentage_used:.1f}%)"
@@ -178,7 +163,6 @@ class AIService:
             net=f"{overview.net_income:.2f}",
             savings_rate=f"{savings_rate:.1f}",
             category_breakdown=category_text,
-            top_merchants=merchant_text or "No merchant data",
             budget_status=budget_text,
             prev_income=f"{prev_overview.total_income:.2f}",
             prev_expenses=f"{prev_overview.total_expenses:.2f}",

@@ -13,7 +13,6 @@ from app.schemas.report import (
     CategoryBreakdown,
     DashboardData,
     FinancialOverview,
-    MerchantSummary,
     MonthlyTrend,
     RecurringTransactionCandidate,
 )
@@ -48,19 +47,6 @@ async def get_category_breakdown(
     return service.get_category_breakdown(
         current_user.id, transaction_type, start_date, end_date
     )
-
-
-@router.get("/top-merchants", response_model=List[MerchantSummary])
-async def get_top_merchants(
-    limit: int = Query(10, ge=1, le=50),
-    start_date: Optional[date] = Query(None),
-    end_date: Optional[date] = Query(None),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get top merchants by spending"""
-    service = ReportService(db)
-    return service.get_top_merchants(current_user.id, limit, start_date, end_date)
 
 
 @router.get("/monthly-trend", response_model=List[MonthlyTrend])

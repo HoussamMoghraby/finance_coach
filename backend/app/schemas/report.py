@@ -15,14 +15,6 @@ class CategoryBreakdown(BaseModel):
     percentage: float
 
 
-class MerchantSummary(BaseModel):
-    """Top merchant summary"""
-    merchant_id: Optional[int]
-    merchant_name: str
-    amount: float
-    transaction_count: int
-
-
 class MonthlyTrend(BaseModel):
     """Monthly trend data point"""
     month: str  # YYYY-MM format
@@ -46,13 +38,11 @@ class DashboardData(BaseModel):
     """Complete dashboard data"""
     overview: FinancialOverview
     category_breakdown: List[CategoryBreakdown]
-    top_merchants: List[MerchantSummary]
     monthly_trends: List[MonthlyTrend]
 
 
 class RecurringTransactionCandidate(BaseModel):
     """Recurring transaction detection candidate"""
-    merchant_name: Optional[str]
     category_name: Optional[str]
     average_amount: float
     frequency_days: int

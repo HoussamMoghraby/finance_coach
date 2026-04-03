@@ -21,4 +21,3 @@ class Merchant(Base):
     
     # Relationships
     user = relationship("User", backref="merchants")
-    transactions = relationship("Transaction", back_populates="merchant")
