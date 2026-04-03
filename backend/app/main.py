@@ -45,15 +45,68 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}
+    """
+    Basic health check endpoint.
+    
+    Returns 200 OK if the application is running.
+    For detailed checks including database and AI, use /ready endpoint.
+    """
+    return {
+        "status": "healthy",
+        "app": "AI Personal Finance & Spending Coach",
+        "version": "0.1.0",
+    }
 
 
 @app.get("/ready")
 async def readiness_check():
-    """Readiness check endpoint"""
-    # TODO: Add database connectivity check
-    return {"status": "ready"}
+    """
+    Comprehensive readiness check endpoint.
+    
+    Checks:
+    - Application status
+    - Database connectivity
+    - AI service availability
+    """
+    from sqlalchemy import text
+    from app.db.session import SessionLocal
+    from app.services.ai import AIService
+    
+    checks = {
+        "application": "ready",
+        "database": "unknown",
+        "ai_service": "unknown",
+    }
+    
+    # Check database
+    try:
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        db.close()
+        checks["database"] = "connected"
+    except Exception as e:
+        checks["database"] = f"error: {str(e)[:100]}"
+    
+    # Check AI service
+    try:
+        db = SessionLocal()
+        ai_service = AIService(db)
+        is_healthy = await ai_service.health_check()
+        db.close()
+        checks["ai_service"] = "connected" if is_healthy else "not responding"
+    except Exception as e:
+        checks["ai_service"] = f"error: {str(e)[:100]}"
+    
+    # Determine overall status
+    all_ready = (
+        checks["database"] == "connected" and 
+        checks["ai_service"] == "connected"
+    )
+    
+    return {
+        "status": "ready" if all_ready else "degraded",
+        "checks": checks,
+    }
 
 
 # Import and include routers

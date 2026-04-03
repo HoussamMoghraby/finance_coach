@@ -13,6 +13,7 @@ from app.api.v1.endpoints import (
     insights,
     recurring_transactions,
     notifications,
+    admin,
 )
 
 
@@ -30,3 +31,4 @@ api_router.include_router(
     recurring_transactions.router, prefix="/recurring-transactions", tags=["recurring-transactions"]
 )
 api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
+api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
