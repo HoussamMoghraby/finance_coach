@@ -5,12 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
-  IonCard,
-  IonCardContent,
   IonSegment,
   IonSegmentButton,
   IonLabel,
@@ -120,55 +115,10 @@ export const AICoachPage = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Wentaro AI</IonTitle>
-          <IonSegment
-            value={mode}
-            onIonChange={(e) => setMode(e.detail.value as CoachMode)}
-            slot="end"
-            className="mr-4"
-          >
-            <IonSegmentButton value="chat">
-              <IonLabel>💬 Chat</IonLabel>
-            </IonSegmentButton>
-            <IonSegmentButton value="budget">
-              <IonLabel>🎯 Budget Coach</IonLabel>
-            </IonSegmentButton>
-          </IonSegment>
-        </IonToolbar>
-      </IonHeader>
-
-      <IonContent className="ion-padding">
-
-        <IonText color="medium">
-          <p className="mb-4">
-            Ask questions about your finances or get personalized budget coaching
-          </p>
-        </IonText>
-
-        {/* Info Banner */}
-        <IonCard color="warning">
-          <IonCardContent>
-            <div className="flex items-start">
-              <div className="text-2xl mr-3">⚠️</div>
-              <div>
-                <IonText color="light">
-                  <p className="font-semibold mb-1">Helpful AI Assistant</p>
-                  <p className="text-sm opacity-90">
-                    This AI coach analyzes your actual financial data. It does not provide
-                    investment, tax, or legal advice. All insights are educational and based
-                    on your transaction history.
-                  </p>
-                </IonText>
-              </div>
-            </div>
-          </IonCardContent>
-        </IonCard>
-
-        {/* Messages Area */}
-        <IonCard className="mt-4" style={{ minHeight: '400px', maxHeight: '60vh', overflow: 'auto' }}>
-          <IonCardContent>
+      <IonContent className="ion-no-padding" style={{ '--padding-bottom': '0px' }}>
+        {/* Messages Area - Full Screen */}
+        <div className="h-full flex flex-col" style={{ paddingBottom: 'calc(180px + env(safe-area-inset-bottom))' }}>
+          <div className="flex-1 overflow-auto px-4 pt-4 pb-4">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-4">
                 <div className="text-6xl mb-4">
@@ -185,7 +135,7 @@ export const AICoachPage = () => {
                   </p>
                 </IonText>
 
-                <div className="w-full space-y-2">
+                <div className="w-full max-w-md space-y-2">
                   <IonText color="medium">
                     <p className="text-sm font-medium mb-3">Try asking:</p>
                   </IonText>
@@ -203,7 +153,7 @@ export const AICoachPage = () => {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 max-w-4xl mx-auto">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -211,60 +161,78 @@ export const AICoachPage = () => {
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    <IonCard
-                      color={message.role === 'user' ? 'primary' : undefined}
-                      className="max-w-[80%] m-0"
+                    <div
+                      className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 ${
+                        message.role === 'user'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100'
+                      }`}
                     >
-                      <IonCardContent>
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg">
-                            {message.role === 'user' ? '👤' : '🤖'}
-                          </span>
-                          <div className="flex-1">
-                            <IonText color={message.role === 'user' ? 'light' : undefined}>
-                              <p className="whitespace-pre-wrap leading-relaxed">
-                                {message.content}
-                              </p>
-                            </IonText>
-                            <IonText color={message.role === 'user' ? 'light' : 'medium'}>
-                              <p className="text-xs mt-2 opacity-70">
-                                {message.timestamp.toLocaleTimeString('en-US', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </p>
-                            </IonText>
-                          </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-lg">
+                          {message.role === 'user' ? '👤' : '🤖'}
+                        </span>
+                        <div className="flex-1">
+                          <p className="whitespace-pre-wrap leading-relaxed text-sm">
+                            {message.content}
+                          </p>
+                          <p className={`text-xs mt-2 opacity-70 ${
+                            message.role === 'user' ? 'text-white' : 'text-gray-500'
+                          }`}>
+                            {message.timestamp.toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
                         </div>
-                      </IonCardContent>
-                    </IonCard>
+                      </div>
+                    </div>
                   </div>
                 ))}
 
                 {isLoading && (
                   <div className="flex justify-start">
-                    <IonCard className="max-w-[80%] m-0">
-                      <IonCardContent>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">🤖</span>
-                          <IonSpinner name="dots" />
-                        </div>
-                      </IonCardContent>
-                    </IonCard>
+                    <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🤖</span>
+                        <IonSpinner name="dots" />
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 <div ref={messagesEndRef} />
               </div>
             )}
-          </IonCardContent>
-        </IonCard>
+          </div>
+        </div>
 
-        {/* Input Area */}
-        <form onSubmit={handleSubmit} className="mt-4">
-          <IonCard>
-            <IonCardContent>
-              <div className="flex gap-3 items-center">
+        {/* Fixed Footer - Input Area and Mode Switcher */}
+        <div
+          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200"
+          style={{
+            paddingBottom: 'env(safe-area-inset-bottom)',
+            zIndex: 1000
+          }}
+        >
+          <div className="px-4 py-3">
+            {/* Mode Switcher */}
+            <IonSegment
+              value={mode}
+              onIonChange={(e) => setMode(e.detail.value as CoachMode)}
+              className="mb-3"
+            >
+              <IonSegmentButton value="chat">
+                <IonLabel>💬 Chat</IonLabel>
+              </IonSegmentButton>
+              <IonSegmentButton value="budget">
+                <IonLabel>🎯 Budget Coach</IonLabel>
+              </IonSegmentButton>
+            </IonSegment>
+
+            {/* Input Form */}
+            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+              <div className="flex-1 bg-gray-100 rounded-full px-4 py-2">
                 <IonInput
                   type="text"
                   value={input}
@@ -275,18 +243,21 @@ export const AICoachPage = () => {
                       : 'Ask for budget advice...'
                   }
                   disabled={isLoading}
-                  className="flex-1"
+                  className="text-sm"
+                  style={{ '--padding-start': '0', '--padding-end': '0' }}
                 />
-                <IonButton
-                  type="submit"
-                  disabled={isLoading || !input.trim()}
-                >
-                  {isLoading ? 'Thinking...' : 'Send'}
-                </IonButton>
               </div>
-            </IonCardContent>
-          </IonCard>
-        </form>
+              <IonButton
+                type="submit"
+                disabled={isLoading || !input.trim()}
+                shape="round"
+                size="default"
+              >
+                {isLoading ? 'Thinking...' : 'Send'}
+              </IonButton>
+            </form>
+          </div>
+        </div>
       </IonContent>
     </IonPage>
   );
