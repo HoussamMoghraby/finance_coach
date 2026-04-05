@@ -13,7 +13,9 @@ import {
   IonButton,
   IonText,
   IonSpinner,
+  IonIcon,
 } from '@ionic/react';
+import { sparklesOutline, sendOutline } from 'ionicons/icons';
 import { insightsAPI } from '@/services/insights';
 
 interface Message {
@@ -121,10 +123,12 @@ export const AICoachPage = () => {
           <div className="flex-1 overflow-auto px-4 pt-4 pb-4">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                <div className="text-6xl mb-4">
-                  {mode === 'chat' ? '💬' : '🎯'}
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-24 h-24 flex items-center justify-center mb-4 shadow-lg">
+                  <span className="text-5xl">
+                    {mode === 'chat' ? '💬' : '🎯'}
+                  </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
+                <h3 className="text-xl font-semibold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   {mode === 'chat' ? 'Start a Conversation' : 'Get Budget Coaching'}
                 </h3>
                 <IonText color="medium">
@@ -140,15 +144,13 @@ export const AICoachPage = () => {
                     <p className="text-sm font-medium mb-3">Try asking:</p>
                   </IonText>
                   {suggestedQuestions.map((question, index) => (
-                    <IonButton
+                    <button
                       key={index}
                       onClick={() => setInput(question)}
-                      expand="block"
-                      fill="outline"
-                      className="text-left"
+                      className="w-full text-left px-4 py-3 rounded-xl border-2 border-blue-200 hover:border-blue-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all"
                     >
-                      <IonLabel className="ion-text-wrap text-sm">{question}</IonLabel>
-                    </IonButton>
+                      <span className="text-sm text-gray-700">{question}</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -164,7 +166,7 @@ export const AICoachPage = () => {
                     <div
                       className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 ${
                         message.role === 'user'
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
                           : 'bg-gray-100'
                       }`}
                     >
@@ -209,52 +211,69 @@ export const AICoachPage = () => {
 
         {/* Fixed Footer - Input Area and Mode Switcher */}
         <div
-          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200"
+          className="fixed bottom-0 left-0 right-0 px-4 pb-4 bg-gradient-to-t from-white via-white to-transparent"
           style={{
-            paddingBottom: 'env(safe-area-inset-bottom)',
+            paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+            paddingTop: '20px',
             zIndex: 1000
           }}
         >
-          <div className="px-4 py-3">
+          <div className="space-y-3" style={{ maxWidth: '600px', margin: '0 auto' }}>
             {/* Mode Switcher */}
             <IonSegment
               value={mode}
               onIonChange={(e) => setMode(e.detail.value as CoachMode)}
-              className="mb-3"
+              className="bg-white rounded-full shadow-sm"
             >
               <IonSegmentButton value="chat">
-                <IonLabel>💬 Chat</IonLabel>
+                <IonLabel className="text-xs">💬 Chat</IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value="budget">
-                <IonLabel>🎯 Budget Coach</IonLabel>
+                <IonLabel className="text-xs">🎯 Budget Coach</IonLabel>
               </IonSegmentButton>
             </IonSegment>
 
             {/* Input Form */}
-            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
-              <div className="flex-1 bg-gray-100 rounded-full px-4 py-2">
-                <IonInput
-                  type="text"
-                  value={input}
-                  onIonInput={(e) => setInput((e.target as HTMLIonInputElement).value as string)}
-                  placeholder={
-                    mode === 'chat'
-                      ? 'Ask about your finances...'
-                      : 'Ask for budget advice...'
-                  }
-                  disabled={isLoading}
-                  className="text-sm"
-                  style={{ '--padding-start': '0', '--padding-end': '0' }}
-                />
-              </div>
-              <IonButton
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                shape="round"
-                size="default"
+            <form onSubmit={handleSubmit}>
+              <div
+                className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full px-4 py-3 shadow-lg"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}
               >
-                {isLoading ? 'Thinking...' : 'Send'}
-              </IonButton>
+                <IonIcon icon={sparklesOutline} className="text-white text-xl" />
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={
+                      mode === 'chat'
+                        ? 'Ask about your finances...'
+                        : 'Ask for budget advice...'
+                    }
+                    disabled={isLoading}
+                    className="w-full bg-transparent text-white placeholder-white placeholder-opacity-70 outline-none text-sm font-medium"
+                    style={{ border: 'none' }}
+                  />
+                </div>
+                {input.trim() && (
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-white bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all"
+                  >
+                    <IonIcon icon={sendOutline} className="text-white text-lg" />
+                  </button>
+                )}
+                {/* <div className="bg-white bg-opacity-20 rounded-full px-3 py-1">
+                  <IonText color="light">
+                    <p className="text-xs font-semibold">✨ AI</p>
+                  </IonText>
+                </div> */}
+              </div>
             </form>
           </div>
         </div>
