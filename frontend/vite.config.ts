@@ -11,10 +11,12 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // Allow access from network
     port: 5173,
+    strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://192.168.0.253:8000',
         changeOrigin: true,
       },
     },

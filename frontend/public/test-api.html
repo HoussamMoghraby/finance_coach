@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API URL Test</title>
+</head>
+<body>
+    <h1>API Configuration Test</h1>
+    <div id="result"></div>
+    <script>
+        const API_URL = 'VITE_API_URL_PLACEHOLDER';
+        document.getElementById('result').innerHTML = `
+            <p><strong>VITE_API_URL:</strong> ${API_URL}</p>
+            <p><strong>Expected:</strong> http://192.168.0.253:8000</p>
+            <p><strong>Match:</strong> ${API_URL === 'http://192.168.0.253:8000' ? '✅ YES' : '❌ NO'}</p>
+        `;
+    </script>
+</body>
+</html>
