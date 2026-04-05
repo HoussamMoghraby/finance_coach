@@ -29,6 +29,7 @@ import {
 } from 'ionicons/icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import wentaroLogo from '@/wentaro-logo-square-white.svg';
 import { NotificationBell } from './NotificationBell';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -47,7 +48,9 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Wentaro AI</IonTitle>
+          <IonTitle>
+            <img src={wentaroLogo} alt="Wentaro AI" className="h-8 mx-auto" />
+          </IonTitle>
           <IonButtons slot="end">
             <NotificationBell />
             <IonButton onClick={handleLogout}>

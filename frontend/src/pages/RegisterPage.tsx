@@ -20,6 +20,7 @@ import {
 } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import wentaroLogo from '@/wentaro-logo-square-white.svg';
 
 export const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -60,7 +61,9 @@ export const RegisterPage = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>Wentaro AI</IonTitle>
+          <IonTitle>
+            <img src={wentaroLogo} alt="Wentaro AI" className="h-8 mx-auto" />
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding" fullscreen>

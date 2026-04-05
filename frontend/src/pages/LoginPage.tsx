@@ -21,6 +21,7 @@ import {
 } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import wentaroLogo from '@/wentaro-logo-square-2.png';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -55,11 +56,23 @@ export const LoginPage = () => {
       </IonHeader> */}
       <IonContent className="ion-padding" fullscreen>
         <div className="flex flex-col items-center justify-center min-h-full">
+          {/* Logo */}
+          <div className="mb-4 text-center">
+            <img
+              src={wentaroLogo}
+              alt="Wentaro AI Logo"
+              className="w-24 h-24 object-contain mx-auto mb-3"
+            />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Wentaro AI
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">Your Personal Finance Coach</p>
+          </div>
+
           <IonCard className="w-full max-w-md">
             <IonCardHeader>
               <div className="text-center">
-                <IonCardTitle className="text-2xl font-bold">Wentaro AI</IonCardTitle>
-                <IonCardSubtitle className="mt-2">Sign in to your account</IonCardSubtitle>
+                <IonCardSubtitle className="text-base">Sign in to your account</IonCardSubtitle>
               </div>
             </IonCardHeader>
             <IonCardContent>
