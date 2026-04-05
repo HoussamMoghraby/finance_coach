@@ -58,7 +58,7 @@ export const LoginPage = () => {
           <IonCard className="w-full max-w-md">
             <IonCardHeader>
               <div className="text-center">
-                <IonCardTitle className="text-2xl font-bold">💰 Wentaro AI</IonCardTitle>
+                <IonCardTitle className="text-2xl font-bold">Wentaro AI</IonCardTitle>
                 <IonCardSubtitle className="mt-2">Sign in to your account</IonCardSubtitle>
               </div>
             </IonCardHeader>
