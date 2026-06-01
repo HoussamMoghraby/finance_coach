@@ -1,0 +1,1 @@
+Follow the PEP 8 style guide for Python code formatting and conventions.

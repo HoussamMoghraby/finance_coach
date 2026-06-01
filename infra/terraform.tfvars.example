@@ -1,0 +1,40 @@
+# General Configuration
+aws_region   = "us-east-1"
+environment  = "production"
+project_name = "financial-coach"
+
+# VPC Configuration
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+
+# RDS Configuration
+db_instance_class           = "db.t3.micro"  # or db.t3.small for better performance
+db_name                     = "financial_coach"
+db_username                 = "postgres"
+db_password                 = "CHANGE_ME_GENERATE_STRONG_PASSWORD"  # Use: openssl rand -base64 32
+db_allocated_storage        = 20
+db_max_allocated_storage    = 100
+db_backup_retention_period  = 7
+
+# EC2 Ollama Configuration
+ollama_instance_type = "g4dn.xlarge"  # 1x NVIDIA T4 GPU
+ollama_ami_id        = ""              # Leave empty to auto-select latest Deep Learning AMI
+ollama_volume_size   = 100             # GB
+
+# SSH Configuration (Optional)
+ssh_key_name      = ""                 # Your EC2 key pair name
+allowed_ssh_cidr  = []                 # e.g., ["1.2.3.4/32"] for your IP
+
+# ECS Configuration
+ecs_task_cpu                = "512"    # 0.5 vCPU
+ecs_task_memory             = "1024"   # 1 GB
+ecs_service_desired_count   = 2        # Number of tasks
+ecs_autoscaling_min_capacity = 2
+ecs_autoscaling_max_capacity = 4
+
+# Application Configuration
+app_secret_key       = "CHANGE_ME_GENERATE_STRONG_SECRET"  # Use: openssl rand -base64 32
+backend_cors_origins = ["http://localhost:5173"]           # Add your frontend URL after deployment
+
+# CloudFront Configuration
+cloudfront_price_class = "PriceClass_100"  # US, Canada, Europe only (cheapest)
